@@ -1,4 +1,4 @@
-import { Trend } from '../types';
+import type { Trend } from '../types';
 import './RankingPanel.css';
 
 interface Props {

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Trend, VoteType } from '../types';
+import type { Trend, VoteType } from '../types';
 import './TrendCard.css';
 
 interface Props {
