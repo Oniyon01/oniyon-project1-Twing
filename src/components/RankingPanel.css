@@ -1,0 +1,63 @@
+.ranking-panel {
+  background: #1a1a2e;
+  border: 1px solid #2a2a4a;
+  border-radius: 16px;
+  padding: 16px;
+  width: 220px;
+  flex-shrink: 0;
+  align-self: flex-start;
+  position: sticky;
+  top: 80px;
+}
+
+.ranking-title {
+  margin: 0 0 14px;
+  font-size: 15px;
+  font-weight: 800;
+  color: #f0f0ff;
+}
+
+.ranking-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ranking-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rank-num {
+  font-size: 16px;
+  font-weight: 900;
+  color: #6366f1;
+  width: 18px;
+  flex-shrink: 0;
+}
+
+.rank-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rank-hashtag {
+  font-size: 13px;
+  font-weight: 700;
+  color: #e2e8f0;
+}
+
+.rank-score {
+  font-size: 11px;
+  color: #4a5568;
+}
+
+.rank-arrow {
+  font-size: 12px;
+}

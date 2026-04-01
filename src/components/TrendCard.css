@@ -1,0 +1,234 @@
+.trend-card {
+  background: #1a1a2e;
+  border: 1px solid #2a2a4a;
+  border-radius: 20px;
+  overflow: hidden;
+  max-width: 480px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* 윙이 말풍선 */
+.wingy-bubble {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 16px 20px 12px;
+  background: #16213e;
+}
+
+.wingy-avatar {
+  font-size: 28px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.wingy-comment {
+  margin: 0;
+  font-size: 14px;
+  color: #a0aec0;
+  line-height: 1.5;
+  padding-top: 4px;
+}
+
+/* 이미지 */
+.trend-image-wrap {
+  position: relative;
+}
+
+.trend-image {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  display: block;
+}
+
+.trend-hashtag {
+  position: absolute;
+  bottom: 12px;
+  left: 14px;
+  background: rgba(99, 102, 241, 0.85);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 99px;
+  backdrop-filter: blur(4px);
+}
+
+/* 본문 */
+.trend-body {
+  padding: 16px 20px 12px;
+}
+
+.trend-title {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 800;
+  color: #f0f0ff;
+}
+
+.trend-desc {
+  margin: 0;
+  font-size: 14px;
+  color: #8892b0;
+  line-height: 1.6;
+}
+
+/* 투표 */
+.vote-section {
+  padding: 12px 20px 8px;
+}
+
+.vote-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.vote-btn {
+  flex: 1;
+  padding: 12px 0;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.1s, opacity 0.1s;
+}
+
+.vote-btn:active {
+  transform: scale(0.96);
+}
+
+.vote-btn.yes {
+  background: #22c55e;
+  color: #fff;
+}
+
+.vote-btn.no {
+  background: #ef4444;
+  color: #fff;
+}
+
+.vote-btn.maybe {
+  background: #f59e0b;
+  color: #fff;
+}
+
+/* 투표 결과 바 */
+.vote-result {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.vote-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.vote-bar-row.active {
+  opacity: 1;
+}
+
+.vote-bar-label {
+  font-size: 13px;
+  color: #c4c9e0;
+  width: 90px;
+  flex-shrink: 0;
+}
+
+.vote-bar-track {
+  flex: 1;
+  height: 8px;
+  background: #2a2a4a;
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.vote-bar-fill {
+  height: 100%;
+  background: #6366f1;
+  border-radius: 99px;
+  transition: width 0.5s ease;
+}
+
+.vote-bar-pct {
+  font-size: 13px;
+  font-weight: 700;
+  color: #e2e8f0;
+  width: 36px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.vote-total {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #4a5568;
+  text-align: right;
+}
+
+/* 댓글 */
+.comment-toggle {
+  background: none;
+  border: none;
+  border-top: 1px solid #2a2a4a;
+  color: #6366f1;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 12px 20px;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+}
+
+.comment-section {
+  padding: 12px 20px 16px;
+  border-top: 1px solid #2a2a4a;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.comment-empty {
+  margin: 0;
+  font-size: 13px;
+  color: #4a5568;
+}
+
+.comment-input-row {
+  display: flex;
+  gap: 8px;
+}
+
+.comment-input {
+  flex: 1;
+  background: #2a2a4a;
+  border: 1px solid #3a3a6a;
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: #e2e8f0;
+  font-size: 13px;
+  outline: none;
+}
+
+.comment-input::placeholder {
+  color: #4a5568;
+}
+
+.comment-submit {
+  background: #6366f1;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
