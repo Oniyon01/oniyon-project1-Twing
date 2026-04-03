@@ -121,12 +121,21 @@ input {
   align-items: flex-start;
 }
 
+.panel-spacer {
+  width: 200px;
+  flex-shrink: 0;
+}
+
 @media (max-width: 768px) {
   .app-main {
     flex-direction: column;
     align-items: center;
     padding: 16px;
     gap: 16px;
+  }
+
+  .panel-spacer {
+    display: none;
   }
 
   .ranking-panel {

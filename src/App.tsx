@@ -35,6 +35,7 @@ export default function App() {
       </header>
 
       <div className="app-main">
+        <div className="panel-spacer" aria-hidden="true" />
         <Feed />
         <RankingPanel />
       </div>
