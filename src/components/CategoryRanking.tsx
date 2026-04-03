@@ -85,7 +85,7 @@ export default function CategoryRanking({ onNext }: Props) {
       </div>
 
       <button className="category-next-btn" onClick={handleNext}>
-        트렌드 카드 보러가기 →
+        윙이로그 보러가기 →
       </button>
     </div>
   );

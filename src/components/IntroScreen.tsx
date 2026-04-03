@@ -50,7 +50,7 @@ export default function IntroScreen({ onNext }: Props) {
 
       {showButton && (
         <button className="intro-btn" onClick={handleNext}>
-          날아가기 🪽
+          날아가기 🕊️
         </button>
       )}
     </div>
