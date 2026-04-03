@@ -20,7 +20,7 @@ export default function TrendCard({ trend }: Props) {
   return (
     <article className="trend-card">
       <div className="wingy-bubble">
-        <span className="wingy-avatar">🐦</span>
+        <img src="/wingy-3d.png" alt="Wingy" className="wingy-avatar" />
         <p className="wingy-comment">{trend.ai_comment}</p>
       </div>
 
