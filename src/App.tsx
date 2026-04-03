@@ -1,7 +1,22 @@
+import { useState } from 'react';
+import IntroScreen from './components/IntroScreen';
+import CategoryRanking from './components/CategoryRanking';
 import Feed from './components/Feed';
 import './styles.css';
 
+type Session = 'intro' | 'categories' | 'feed';
+
 export default function App() {
+  const [session, setSession] = useState<Session>('intro');
+
+  if (session === 'intro') {
+    return <IntroScreen onNext={() => setSession('categories')} />;
+  }
+
+  if (session === 'categories') {
+    return <CategoryRanking onNext={() => setSession('feed')} />;
+  }
+
   return (
     <div className="app">
       <header className="app-header">

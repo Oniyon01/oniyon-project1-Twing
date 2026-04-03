@@ -6,6 +6,7 @@ export interface Trend {
   image_url: string;
   ai_comment: string;
   created_at: string;
+  category: Category;
   votes: {
     yes: number;
     no: number;
@@ -14,3 +15,11 @@ export interface Trend {
 }
 
 export type VoteType = 'yes' | 'no' | 'maybe';
+
+export type Category = 'lifestyle' | 'cafe' | 'travel' | 'challenge' | 'tech';
+
+export interface CategoryMeta {
+  key: Category;
+  label: string;
+  emoji: string;
+}
