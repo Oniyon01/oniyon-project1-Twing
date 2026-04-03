@@ -1,23 +1,76 @@
 .ranking-panel {
   background: #1a1a2e;
-  border: 1px solid #2a2a4a;
-  border-radius: 16px;
-  padding: 16px;
-  width: 220px;
+  border: 1px solid rgba(249, 168, 212, 0.15);
+  border-radius: 20px;
+  padding: 18px 16px;
+  width: 200px;
   flex-shrink: 0;
   align-self: flex-start;
   position: sticky;
   top: 80px;
+  box-shadow: 0 4px 20px rgba(249, 168, 212, 0.05);
 }
 
-.ranking-title {
-  margin: 0 0 14px;
-  font-size: 15px;
+/* 헤더 */
+.rp-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.rp-wingy {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.rp-title {
+  font-size: 14px;
   font-weight: 800;
-  color: #f0f0ff;
+  background: linear-gradient(90deg, #f9a8d4, #93c5fd);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-.ranking-list {
+/* 탭 (이모지만) */
+.rp-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.rp-tab {
+  flex: 1;
+  padding: 6px 0;
+  border-radius: 8px;
+  border: 1px solid rgba(249, 168, 212, 0.12);
+  background: transparent;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.15s;
+  line-height: 1;
+}
+
+.rp-tab.active {
+  background: rgba(249, 168, 212, 0.15);
+  border-color: rgba(249, 168, 212, 0.4);
+}
+
+.rp-tab:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.rp-tab-label {
+  margin: 0 0 12px;
+  font-size: 11px;
+  color: #6b7280;
+  text-align: center;
+}
+
+/* 리스트 */
+.rp-list {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -26,38 +79,85 @@
   gap: 10px;
 }
 
-.ranking-item {
+.rp-empty {
+  font-size: 12px;
+  color: #4a5568;
+  text-align: center;
+  padding: 12px 0;
+}
+
+.rp-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.rp-rank {
+  min-width: 22px;
+  height: 22px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
-  gap: 10px;
-}
-
-.rank-num {
-  font-size: 16px;
+  justify-content: center;
+  font-size: 11px;
   font-weight: 900;
-  color: #6366f1;
-  width: 18px;
   flex-shrink: 0;
+  margin-top: 1px;
 }
 
-.rank-info {
+.rp-rank.rank-1 {
+  background: linear-gradient(135deg, #ffd700, #ffb347);
+  color: #1a1a2e;
+}
+
+.rp-rank.rank-2 {
+  background: linear-gradient(135deg, #c0c0c0, #a8a8a8);
+  color: #1a1a2e;
+}
+
+.rp-rank.rank-3 {
+  background: linear-gradient(135deg, #cd7f32, #b87333);
+  color: #fff;
+}
+
+.rp-rank:not(.rank-1):not(.rank-2):not(.rank-3) {
+  background: rgba(255, 255, 255, 0.06);
+  color: #8892b0;
+}
+
+.rp-info {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
+  min-width: 0;
 }
 
-.rank-hashtag {
-  font-size: 13px;
+.rp-name {
+  font-size: 12px;
   font-weight: 700;
   color: #e2e8f0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.rank-score {
-  font-size: 11px;
+.rp-bar-track {
+  width: 100%;
+  height: 4px;
+  background: rgba(249, 168, 212, 0.08);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.rp-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f9a8d4, #93c5fd);
+  border-radius: 99px;
+  transition: width 0.5s ease;
+}
+
+.rp-score {
+  font-size: 10px;
   color: #4a5568;
-}
-
-.rank-arrow {
-  font-size: 12px;
 }
