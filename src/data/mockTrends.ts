@@ -9,6 +9,7 @@ export const mockTrends: Trend[] = [
     image_url: 'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=600&q=80',
     ai_comment: '요즘 피드에서 엄청 보이던데? 이거 진짜 유행 맞아? 🤔',
     created_at: '2026-04-01',
+    category: 'challenge',
     votes: { yes: 142, no: 38, maybe: 61 },
   },
   {
@@ -19,6 +20,7 @@ export const mockTrends: Trend[] = [
     image_url: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=600&q=80',
     ai_comment: '나는 카페 가면 커피 마시는데... 이제 자러 가는 거야?? 😴',
     created_at: '2026-04-01',
+    category: 'cafe',
     votes: { yes: 89, no: 54, maybe: 97 },
   },
   {
@@ -29,6 +31,7 @@ export const mockTrends: Trend[] = [
     image_url: 'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=600&q=80',
     ai_comment: '폰 없이 여행 간 걸 폰으로 올린다고?! 이게 맞아?! 🤯',
     created_at: '2026-04-01',
+    category: 'travel',
     votes: { yes: 201, no: 112, maybe: 44 },
   },
 ];
