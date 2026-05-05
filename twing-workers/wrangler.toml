@@ -1,0 +1,36 @@
+# wrangler.toml — Cloudflare Workers 설정
+#
+# 배포 명령:
+#   wrangler deploy             (프로덕션)
+#   wrangler dev                (로컬 개발 — http://localhost:8787)
+#
+# 시크릿 등록 (한 번만):
+#   wrangler secret put ANTHROPIC_API_KEY
+#   wrangler secret put SUPABASE_SERVICE_KEY
+#
+# 일반 환경변수는 [vars]에 평문으로 적어도 됨 (URL 같은 비밀 아닌 것).
+
+name = "twing-workers"
+main = "src/index.js"
+compatibility_date = "2026-01-01"
+
+# Node.js 호환성 모듈 — fetch만 쓰면 사실 필요 없지만, 향후 확장 대비
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+# 비밀 아닌 환경변수는 여기에 평문으로
+SUPABASE_URL = "https://your-project.supabase.co"
+
+# 비밀(API key 등)은 wrangler secret put 으로 따로 등록
+# 등록 후엔 env.ANTHROPIC_API_KEY, env.SUPABASE_SERVICE_KEY 로 자동 주입됨
+
+[observability]
+# 에러 로그 추적용 (Cloudflare 대시보드 → Workers → Logs)
+enabled = true
+
+# 환경별 분기 (선택) — staging/production 따로 배포하고 싶을 때
+# [env.staging]
+# vars = { SUPABASE_URL = "https://staging-project.supabase.co" }
+#
+# [env.production]
+# vars = { SUPABASE_URL = "https://prod-project.supabase.co" }

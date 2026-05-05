@@ -4,40 +4,45 @@ interface Props {
   voted: VoteType | null;
   votes: { yes: number; no: number; maybe: number };
   onVote: (type: VoteType) => void;
+  isOwnCard?: boolean;
+  hotScoreValue?: number;
 }
 
-export default function VoteButtons({ voted, votes, onVote }: Props) {
-  const total = votes.yes + votes.no + votes.maybe;
-  const pct = (n: number) => (total === 0 ? 0 : Math.round((n / total) * 100));
+const OPTIONS: { type: VoteType; emoji: string; label: string }[] = [
+  { type: 'yes',   emoji: '🔥', label: '해볼래' },
+  { type: 'maybe', emoji: '👀', label: '구경할래' },
+  { type: 'no',    emoji: '🤔', label: '글쎄' },
+];
 
-  return (
-    <div className="vote-section">
-      {voted ? (
-        <div className="vote-result">
-          <VoteBar label="👍 맞다" value={pct(votes.yes)} active={voted === 'yes'} />
-          <VoteBar label="👎 아니다" value={pct(votes.no)} active={voted === 'no'} />
-          <VoteBar label="🤔 모르겠다" value={pct(votes.maybe)} active={voted === 'maybe'} />
-          <p className="vote-total">총 {total.toLocaleString()}명 참여</p>
+export default function VoteButtons({ voted, votes, onVote, isOwnCard, hotScoreValue }: Props) {
+  if (isOwnCard) {
+    return (
+      <div className="vote-stats-grid">
+        {OPTIONS.map(({ type, emoji, label }) => (
+          <div key={type} className="vote-stat-col">
+            <div className="vote-stat-num">{emoji} {votes[type]}</div>
+            <div className="vote-stat-label">{label}</div>
+          </div>
+        ))}
+        <div className="vote-stat-col">
+          <div className="vote-stat-num vote-stat-num--hot">▲ {hotScoreValue ?? 0}</div>
+          <div className="vote-stat-label">핫점수</div>
         </div>
-      ) : (
-        <div className="vote-buttons">
-          <button className="vote-btn yes" onClick={() => onVote('yes')}>👍 맞다</button>
-          <button className="vote-btn no" onClick={() => onVote('no')}>👎 아니다</button>
-          <button className="vote-btn maybe" onClick={() => onVote('maybe')}>🤔 모르겠다</button>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function VoteBar({ label, value, active }: { label: string; value: number; active: boolean }) {
-  return (
-    <div className={`vote-bar-row ${active ? 'active' : ''}`}>
-      <span className="vote-bar-label">{label}</span>
-      <div className="vote-bar-track">
-        <div className="vote-bar-fill" style={{ width: `${value}%` }} />
       </div>
-      <span className="vote-bar-pct">{value}%</span>
+    );
+  }
+
+  return (
+    <div className="vote-buttons">
+      {OPTIONS.map(({ type, emoji, label }) => (
+        <button
+          key={type}
+          className={`vote-btn${voted === type ? ' vote-btn--on' : ''}`}
+          onClick={() => onVote(type)}
+        >
+          {emoji} {label} <span className="vote-btn-count">{votes[type]}</span>
+        </button>
+      ))}
     </div>
   );
 }

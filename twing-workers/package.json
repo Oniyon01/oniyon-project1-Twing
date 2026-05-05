@@ -1,0 +1,19 @@
+{
+  "name": "twing-workers",
+  "version": "1.0.0",
+  "description": "Twing 2.0 — Cloudflare Workers backend for Wingle AI prompts",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "deploy:staging": "wrangler deploy --env staging",
+    "tail": "wrangler tail",
+    "secret:claude": "wrangler secret put ANTHROPIC_API_KEY",
+    "secret:supabase": "wrangler secret put SUPABASE_SERVICE_KEY"
+  },
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  },
+  "license": "MIT"
+}

@@ -9,7 +9,8 @@ export const trends: Trend[] = [
     image_url: 'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=600&q=80',
     ai_comment: '요즘 피드에서 엄청 보이던데? 이거 진짜 유행 맞아? 🤔',
     created_at: '2026-04-01',
-    category: 'challenge',
+    category: '갓생',
+    views: 0,
     votes: { yes: 142, no: 38, maybe: 61 },
   },
   {
@@ -20,7 +21,8 @@ export const trends: Trend[] = [
     image_url: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=600&q=80',
     ai_comment: '나는 카페 가면 커피 마시는데... 이제 자러 가는 거야?? 😴',
     created_at: '2026-04-01',
-    category: 'cafe',
+    category: '힐링',
+    views: 0,
     votes: { yes: 89, no: 54, maybe: 97 },
   },
   {
@@ -31,7 +33,8 @@ export const trends: Trend[] = [
     image_url: 'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=600&q=80',
     ai_comment: '폰 없이 여행 간 걸 폰으로 올린다고?! 이게 맞아?! 🤯',
     created_at: '2026-04-01',
-    category: 'travel',
+    category: '일상',
+    views: 0,
     votes: { yes: 201, no: 112, maybe: 44 },
   },
   {
@@ -42,7 +45,8 @@ export const trends: Trend[] = [
     image_url: 'https://images.unsplash.com/photo-1617196034183-421b4040ed20?w=600&q=80',
     ai_comment: '혼자 먹는 게 이제 힙한 거야? 나도 혼자 밥 잘 먹는데! 🍱',
     created_at: '2026-04-02',
-    category: 'cafe',
+    category: '푸드',
+    views: 0,
     votes: { yes: 174, no: 29, maybe: 88 },
   },
   {
@@ -53,7 +57,8 @@ export const trends: Trend[] = [
     image_url: 'https://images.unsplash.com/photo-1466781783364-36c955e42a7f?w=600&q=80',
     ai_comment: '식물한테 말 걸어본 적 있어? 나는 있어... 🌿',
     created_at: '2026-04-02',
-    category: 'lifestyle',
+    category: '힐링',
+    views: 0,
     votes: { yes: 118, no: 22, maybe: 76 },
   },
   {
@@ -64,7 +69,8 @@ export const trends: Trend[] = [
     image_url: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=600&q=80',
     ai_comment: '집 앞 골목도 여행지가 될 수 있어! 나는 매일 탐험 중 🗺️',
     created_at: '2026-04-02',
-    category: 'travel',
+    category: '일상',
+    views: 0,
     votes: { yes: 156, no: 41, maybe: 62 },
   },
   {
@@ -75,7 +81,8 @@ export const trends: Trend[] = [
     image_url: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80',
     ai_comment: '새벽 5시... 나는 그 시간에 꿈 속에서 날고 있는데 🌅',
     created_at: '2026-04-02',
-    category: 'challenge',
+    category: '갓생',
+    views: 0,
     votes: { yes: 233, no: 67, maybe: 95 },
   },
   {
@@ -86,7 +93,8 @@ export const trends: Trend[] = [
     image_url: 'https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=600&q=80',
     ai_comment: 'AI가 만든 나? 나도 AI인데 우리 친구 하자! 🤖',
     created_at: '2026-04-03',
-    category: 'tech',
+    category: '테크',
+    views: 0,
     votes: { yes: 189, no: 55, maybe: 103 },
   },
   {
@@ -97,7 +105,8 @@ export const trends: Trend[] = [
     image_url: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&q=80',
     ai_comment: '짐이 적으면 날기 더 쉬운데! 나는 이미 가벼워~ 🪶',
     created_at: '2026-04-03',
-    category: 'lifestyle',
+    category: '스타일',
+    views: 0,
     votes: { yes: 145, no: 33, maybe: 58 },
   },
 ];

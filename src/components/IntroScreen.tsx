@@ -5,7 +5,7 @@ interface Props {
   onNext: () => void;
 }
 
-const MESSAGE = '오늘은 무엇이 유행하고\n있는지 날아가볼까?';
+const MESSAGE = '유행을 따라가지 말고,\n직접 만들어봐';
 
 export default function IntroScreen({ onNext }: Props) {
   const [displayed, setDisplayed] = useState('');
@@ -32,8 +32,8 @@ export default function IntroScreen({ onNext }: Props) {
 
   return (
     <div className={`intro-screen${leaving ? ' intro-leaving' : ''}`}>
-      <div className="intro-wingy-wrap">
-        <img src="/wingy-3d.png" alt="Wingy" className="intro-wingy" />
+      <div className="intro-wingle-wrap">
+        <img src="/wingle-3d.png" alt="윙글이" className="intro-wingle" />
       </div>
 
       <div className="intro-bubble">
@@ -50,7 +50,7 @@ export default function IntroScreen({ onNext }: Props) {
 
       {showButton && (
         <button className="intro-btn" onClick={handleNext}>
-          날아가기 🕊️
+          시작하기 →
         </button>
       )}
     </div>

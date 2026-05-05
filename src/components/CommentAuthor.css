@@ -1,0 +1,136 @@
+.ca-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.ca-avatar {
+  flex-shrink: 0;
+}
+
+.ca-avatar-img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.ca-avatar-placeholder {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #A888D8, #6366f1);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ca-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.ca-name-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.ca-nickname {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--c-text);
+}
+
+.ca-grade-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: rgba(168, 136, 216, 0.12);
+  border: 1px solid rgba(168, 136, 216, 0.25);
+  border-radius: 99px;
+  padding: 2px 7px 2px 4px;
+  cursor: default;
+  user-select: none;
+}
+
+.ca-grade-icon {
+  font-size: 13px;
+  line-height: 1;
+}
+
+.ca-grade-name {
+  font-size: 10px;
+  font-weight: 700;
+  color: #c4b5fd;
+  white-space: nowrap;
+}
+
+.ca-badge-chip {
+  position: relative;
+  font-size: 14px;
+  line-height: 1;
+  cursor: default;
+  user-select: none;
+  filter: drop-shadow(0 0 3px rgba(168, 136, 216, 0.4));
+}
+
+.ca-tooltip {
+  pointer-events: none;
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: var(--c-overlay);
+  border: 1px solid rgba(168, 136, 216, 0.3);
+  border-radius: 10px;
+  padding: 8px 11px;
+  width: max-content;
+  max-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  opacity: 0;
+  transition: opacity 0.15s, transform 0.15s;
+  z-index: 100;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.ca-tooltip strong {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--c-text);
+  white-space: nowrap;
+}
+
+.ca-tooltip span {
+  font-size: 11px;
+  color: var(--c-text-muted);
+  line-height: 1.4;
+  white-space: normal;
+}
+
+.ca-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: rgba(168, 136, 216, 0.3);
+}
+
+.ca-grade-chip:hover .ca-tooltip,
+.ca-badge-chip:hover .ca-tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.ca-tooltip--grade {
+  min-width: 160px;
+}

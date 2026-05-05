@@ -1,22 +1,18 @@
 import { useState } from 'react';
-import { trends } from '../data/trends';
-import type { Category, CategoryMeta } from '../types';
+import type { Trend, Category } from '../types';
+import { CATEGORIES } from '../theme/categories';
 import './RankingPanel.css';
 
-const CATEGORIES: CategoryMeta[] = [
-  { key: 'challenge', label: '챌린지', emoji: '🔥' },
-  { key: 'cafe',      label: '카페/푸드', emoji: '☕' },
-  { key: 'travel',    label: '여행',   emoji: '✈️' },
-  { key: 'lifestyle', label: '라이프', emoji: '🌿' },
-  { key: 'tech',      label: '테크',   emoji: '🤖' },
-];
-
 function trendScore(votes: { yes: number; no: number; maybe: number }) {
-  return votes.yes + votes.maybe;
+  return votes.yes - votes.no;
 }
 
-export default function RankingPanel() {
-  const [activeTab, setActiveTab] = useState<Category>('challenge');
+interface Props {
+  trends: Trend[];
+}
+
+export default function RankingPanel({ trends }: Props) {
+  const [activeTab, setActiveTab] = useState<Category>('갓생');
 
   const ranked = trends
     .filter((t) => t.category === activeTab)
@@ -27,7 +23,7 @@ export default function RankingPanel() {
   return (
     <aside className="ranking-panel">
       <div className="rp-header">
-        <img src="/wingy.png" alt="Wingy" className="rp-wingy" />
+        <img src="/wingle.png" alt="윙글이" className="rp-wingle" />
         <span className="rp-title">트렌드 순위</span>
       </div>
 
@@ -37,14 +33,14 @@ export default function RankingPanel() {
             key={cat.key}
             className={`rp-tab${activeTab === cat.key ? ' active' : ''}`}
             onClick={() => setActiveTab(cat.key)}
-            title={cat.label}
+            title={cat.key}
           >
             {cat.emoji}
           </button>
         ))}
       </div>
       <p className="rp-tab-label">
-        {CATEGORIES.find((c) => c.key === activeTab)?.label}
+        {CATEGORIES.find((c) => c.key === activeTab)?.key}
       </p>
 
       <ul className="rp-list">
