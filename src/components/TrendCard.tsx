@@ -4,7 +4,7 @@ import VoteButtons from './VoteButtons';
 import { hotScore as calcHotScore, getGrade } from '../lib/ranking';
 import { castVote, changeVote, removeVote, fetchComments, fetchCommentCount, addComment, incrementViews } from '../lib/trends';
 import CommentAuthor from './CommentAuthor';
-import { getCategoryMeta } from '../theme/categories';
+import { getCategoryMeta, getCategoryColor } from '../theme/categories';
 
 interface Props {
   trend: Trend;
@@ -160,7 +160,7 @@ export default function TrendCard({ trend, isLoggedIn, onLoginRequired, onOpenDe
       <div className="card-meta">
         <span
           className="cat-badge"
-          style={catMeta ? { background: catMeta.bg, color: catMeta.color, border: `1px solid ${catMeta.border}` } : undefined}
+          style={catMeta ? { background: catMeta.bg, color: getCategoryColor(catMeta), border: `1px solid ${catMeta.border}` } : undefined}
         >
           {catMeta ? `${catMeta.emoji} ${catMeta.key}` : trend.category}
         </span>

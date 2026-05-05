@@ -93,6 +93,18 @@
   margin-bottom: 4px;
 }
 
+[data-theme="light"] .detail-section-label {
+  color: #5b35a8;
+}
+
+[data-theme="light"] .detail-back {
+  color: #5b35a8;
+}
+
+[data-theme="light"] .detail-back:hover {
+  color: #7c52c8;
+}
+
 .detail-section-sub {
   font-size: 12px;
   color: var(--c-text-subtle);

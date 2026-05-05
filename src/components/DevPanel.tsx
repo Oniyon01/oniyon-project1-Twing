@@ -11,6 +11,7 @@ interface Props {
   onSetTrends: (trends: Trend[]) => void;
   onSetUserOverride: (id: string | undefined) => void;
   onSetNewUserMode: (v: boolean) => void;
+  onSetOnboarded: () => void;
   onRetry: () => void;
 }
 
@@ -18,7 +19,7 @@ const DEMO_USER_ID = 'user-demo-1';
 
 export default function DevPanel({
   trends, isError, currentUserIdOverride, newUserMode,
-  onToggleError, onSetTrends, onSetUserOverride, onSetNewUserMode, onRetry,
+  onToggleError, onSetTrends, onSetUserOverride, onSetNewUserMode, onSetOnboarded, onRetry,
 }: Props) {
   const [open, setOpen] = useState(false);
   const [log, setLog] = useState('');
@@ -45,8 +46,7 @@ export default function DevPanel({
   }
 
   function handleSetOnboarded() {
-    localStorage.setItem('twing_onboarded', '1');
-    onSetNewUserMode(false);
+    onSetOnboarded();
     force();
     toast('✅ 온보딩 완료 처리됨');
   }

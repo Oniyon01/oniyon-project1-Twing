@@ -37,6 +37,7 @@ export default function App() {
   const [devUserOverride, setDevUserOverride] = useState<string | undefined>(undefined);
   const [devErrorOverride, setDevErrorOverride] = useState(false);
   const [devNewUserMode, setDevNewUserMode] = useState(false);
+  const [devOnboarded, setDevOnboarded] = useState(false);
 
   // ── 아이디어 창작 플로우 상태 ──
   const [ideaInput, setIdeaInput] = useState<IdeaInput | null>(null);
@@ -273,6 +274,7 @@ export default function App() {
                 onCreateIdea={handleStartIdeaCreation}
                 onRetry={loadTrends}
                 forceNewUser={devNewUserMode}
+                forceOnboarded={devOnboarded}
               />
             )}
             {feedTab === 'winglepick' && (
@@ -339,7 +341,8 @@ export default function App() {
         onToggleError={() => setDevErrorOverride((v) => !v)}
         onSetTrends={setTrends}
         onSetUserOverride={setDevUserOverride}
-        onSetNewUserMode={setDevNewUserMode}
+        onSetNewUserMode={(v) => { setDevNewUserMode(v); if (v) setDevOnboarded(false); }}
+        onSetOnboarded={() => { localStorage.setItem('twing_onboarded', '1'); setDevOnboarded(true); setDevNewUserMode(false); }}
         onRetry={loadTrends}
       />
     </div>

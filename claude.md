@@ -76,12 +76,13 @@
 ```
 (프론트엔드)
 src/
- ├─ App.tsx                     ← 세션(intro/feed/auth/mypage/idea-input/idea-variants/idea-unlock) + auth + Realtime + 바텀 탭(홈/윙글픽/만들기/챌린지/마이) + 아이디어 창작 플로우 상태 + DevPanel 상태(devNewUserMode/devErrorOverride/devUserOverride)
- ├─ styles.css
+ ├─ App.tsx                     ← 세션(intro/feed/auth/mypage/idea-input/idea-variants/idea-unlock) + auth + Realtime + 바텀 탭(홈/윙글픽/만들기/챌린지/마이) + 아이디어 창작 플로우 상태 + DevPanel 상태(devNewUserMode/devOnboarded/devErrorOverride/devUserOverride)
+ ├─ styles.css                  ← 라이트 모드: 배경 #d9d4ef 계열 라벤더, 텍스트 #1a1530 계열 짙은 보라톤
  ├─ theme/
- │   └─ categories.ts           ← ★ 10개 카테고리 메타데이터 (key·emoji·color·bg·border·description)
+ │   └─ categories.ts           ← ★ 10개 카테고리 메타데이터 (key·emoji·color·colorLight·bg·border·description)
  │                                  워커의 src/constants/categories.js와 key 1:1 동일 (한글)
- │                                  Category 타입, CATEGORIES 배열, getCategoryMeta(key) 함수 export
+ │                                  Category 타입, CATEGORIES 배열, getCategoryMeta(key) / getCategoryColor(meta) 함수 export
+ │                                  color=다크모드 텍스트색, colorLight=라이트모드 텍스트색 (각 컬러의 진한 버전)
  ├─ lib/
  │   ├─ supabase.ts
  │   ├─ trends.ts               ← fetchTrends, castVote, changeVote, removeVote, fetchComments, fetchCommentCount, addComment, incrementViews, likeTrend, unlikeTrend
@@ -94,13 +95,16 @@ src/
  ├─ components/
  │   ├─ IntroScreen.tsx/css
  │   ├─ AuthScreen.tsx/css
- │   ├─ Feed.tsx                ← 아이디어 피드 (최신순/인기순) + 상단 "아이디어 등록하기" CTA 버튼 + forceNewUser prop으로 신규유저 화면 강제 전환 지원
+ │   ├─ Feed.tsx                ← 아이디어 피드 (최신순/인기순) + forceNewUser + forceOnboarded prop으로 신규유저/온보딩 상태 강제 전환 지원
  │   ├─ EmptyFeed.tsx/css       ← 피드 빈 상태 3종: new-user(환영카드+시딩카드+사용법), no-results(검색 결과 없음), error(네트워크 오류)
+ │                                  시딩 카드: getCategoryMeta() + getCategoryColor()로 카테고리 인라인 스타일 적용 (한글 키)
  │   ├─ TrendCard.tsx           ← 카드 본문 클릭→상세, 투표·추가제안
  │                                  좋아요 버튼 없음
- │                                  카테고리 뱃지: getCategoryMeta()로 인라인 스타일 적용
+ │                                  카테고리 뱃지: getCategoryMeta() + getCategoryColor()로 인라인 스타일 적용 (다크/라이트 자동 전환)
  │                                  ⋯ 버튼: 드롭다운 메뉴(🔗 공유하기 / 🚩 신고하기), 외부 클릭 시 닫힘
  │   ├─ TrendDetail.tsx/css     ← 아이디어 상세 전체화면 (참여의향·추천플랫폼·추가제안 섹션)
+ │                                  카테고리 뱃지: getCategoryMeta() + getCategoryColor() 적용 (구버전 CATEGORY_LABEL 영어 딕셔너리 제거)
+ │                                  라이트 모드 label 색상: .detail-section-label { color: #5b35a8 } 오버라이드
  │   ├─ VoteButtons.tsx         ← 해볼래 / 구경할래 / 글쎄  (보는중 → 구경할래 변경됨)
  │   ├─ WinglePick.tsx/css      ← 윙글이픽 탭 (실시간TOP10·주간TOP10·명예전당), 카드 클릭→상세
  │   ├─ ChallengeBoard.tsx/css  ← 챌린지 탭 (SNS핫챌린지·Twing발 갓생 카테고리 필터)
@@ -124,7 +128,7 @@ src/
 - "기타" 카테고리 없음 (AI 게으른 분류 방지)
 
 (백엔드 — Cloudflare Workers)
-twing-workers/                  ← 현재 v1.0 (repo 반영 버전)
+twing-workers/                  ← 현재 v1.1 (repo 반영 버전)
  ├─ wrangler.toml               ← Workers 설정 (SUPABASE_URL 여기서 수정)
  ├─ package.json
  ├─ .dev.vars.example           ← 로컬 개발용 환경변수 템플릿
@@ -132,6 +136,8 @@ twing-workers/                  ← 현재 v1.0 (repo 반영 버전)
      ├─ index.js                ← 메인 라우터 (GET / 헬스체크, POST 2개 라우팅)
      ├─ prompts/
      │   └─ wingle.js           ← 윙글이 페르소나 + SYSTEM_PROMPT_A/B + buildUserPromptA/B
+     │                              + GOLD_STANDARD_EXAMPLES (갓생/스타일/테크 검증 출력 3개)
+     │                              + category enum 규칙·가이드 buildUserPromptA에 주입
      ├─ handlers/
      │   ├─ generateVariants.js ← POST /api/generate-variants (프롬프트 A, 1회 재시도)
      │   └─ deepAnalysis.js     ← POST /api/deep-analysis (프롬프트 B, 중복호출 캐시)
@@ -139,16 +145,20 @@ twing-workers/                  ← 현재 v1.0 (repo 반영 버전)
      │   ├─ claude.js           ← fetch 기반 Claude API 래퍼 (SDK 미사용)
      │   ├─ supabase.js         ← PostgREST 직접 호출 (insert/getById/update), service_role로 RLS 우회
      │   ├─ validators.js       ← validateStrictA/B, validateSoftA (strict 실패 시 재호출)
+     │   │                          validateStrictA: category 필드가 CATEGORY_KEY_SET 내 한글 키인지 검증
      │   ├─ cors.js             ← CORS 헤더, jsonResponse 헬퍼
      │   └─ errors.js           ← 윙글이 톤 에러 응답
      └─ constants/
+         ├─ categories.js       ← ★ 10개 카테고리 단일 진실 소스 (클라이언트 categories.ts와 key 1:1)
+         │                          CATEGORIES, CATEGORY_KEYS, CATEGORY_KEY_SET, CATEGORY_ENUM_FOR_PROMPT, getCategoryMeta() export
          └─ messages.js         ← 윙글이 실패 메시지 풀
-         (※ v1.1 tarball에는 categories.js 추가됨 — 아직 repo 미반영)
 
 (DB 스키마)
 supabase/
  ├─ migrations/
- │   └─ 20260426000001_twing_2_0.sql  ← 기존 스키마 (구버전)
+ │   └─ 20260426000001_twing_2_0.sql  ← 기존 스키마 + add_points() 함수 + trg_first_idea_bonus 트리거
+ │                                        add_points(user_id, amount, reason): users.points 갱신 (등급은 trg_users_sync가 자동 처리)
+ │                                        handle_first_idea(): 첫 아이디어 +20pt, 이후 매 아이디어 +10pt
  └─ (신규 스키마는 twing-supabase.tar.gz 5파일로 별도 관리, 로컬 검증 완료)
      ├─ 01_schema.sql  ← 5개 테이블, 인덱스 7개, 트리거 3개
      ├─ 02_rls.sql     ← Row Level Security (클라이언트용)

@@ -16,6 +16,7 @@ interface Props {
   onCreateIdea: () => void;
   onRetry?: () => void;
   forceNewUser?: boolean;
+  forceOnboarded?: boolean;
 }
 
 type SortMode = 'newest' | 'hot';
@@ -23,13 +24,13 @@ type SortMode = 'newest' | 'hot';
 export default function Feed({
   trends, loading, error, errorCode,
   isLoggedIn, onLoginRequired, onOpenDetail,
-  currentUserId, onCreateIdea, onRetry, forceNewUser,
+  currentUserId, onCreateIdea, onRetry, forceNewUser, forceOnboarded,
 }: Props) {
   const [sort, setSort] = useState<SortMode>('newest');
   const [searchQuery, setSearchQuery] = useState('');
   const searchRef = useRef<HTMLInputElement>(null);
 
-  const isOnboarded = !forceNewUser && localStorage.getItem('twing_onboarded') === '1';
+  const isOnboarded = forceOnboarded || (!forceNewUser && localStorage.getItem('twing_onboarded') === '1');
 
   const sorted = [...trends].sort((a, b) =>
     sort === 'newest'

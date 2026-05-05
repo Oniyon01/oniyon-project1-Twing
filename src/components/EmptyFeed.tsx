@@ -1,3 +1,4 @@
+import { getCategoryMeta, getCategoryColor } from '../theme/categories';
 import './EmptyFeed.css';
 
 interface Props {
@@ -12,8 +13,7 @@ interface Props {
 const SEEDING_CARDS = [
   {
     id: 'seed-1',
-    categoryLabel: '🌱 라이프',
-    categoryClass: 'lifestyle',
+    categoryKey: '힐링',
     title: '화분에 이름 붙이기',
     description: '키우는 화분마다 이름 붙여서 인스타에 일기 쓰기...',
     hashtags: ['#식물도친구', '#반려식물일기', '#그린루틴'],
@@ -26,8 +26,7 @@ const SEEDING_CARDS = [
   },
   {
     id: 'seed-2',
-    categoryLabel: '🍳 푸드',
-    categoryClass: 'cafe',
+    categoryKey: '푸드',
     title: '새벽 1시 라면 일지',
     description: '새벽에 끓이는 라면 ASMR 모음...',
     hashtags: ['#새벽라면', '#심야ASMR'],
@@ -123,13 +122,20 @@ export default function EmptyFeed({ type, onCreateIdea, onClearSearch, onRetry, 
       </div>
 
       {/* 시딩 카드들 (정적 미리보기) */}
-      {SEEDING_CARDS.map((card) => (
+      {SEEDING_CARDS.map((card) => {
+        const catMeta = getCategoryMeta(card.categoryKey);
+        return (
         <article
           key={card.id}
           className={`trend-card${card.faded ? ' seeding-card--faded' : ''}`}
         >
           <div className="card-meta">
-            <span className={`cat-badge cat-badge--${card.categoryClass}`}>{card.categoryLabel}</span>
+            <span
+              className="cat-badge"
+              style={catMeta ? { background: catMeta.bg, color: getCategoryColor(catMeta), border: `1px solid ${catMeta.border}` } : undefined}
+            >
+              {catMeta ? `${catMeta.emoji} ${catMeta.key}` : card.categoryKey}
+            </span>
             <span className="card-author seeding-author">@윙글이 · 🦊✨ 트윙글</span>
             <span className="seeding-badge">시딩</span>
             <span className="card-time">{card.time}</span>
@@ -165,7 +171,8 @@ export default function EmptyFeed({ type, onCreateIdea, onClearSearch, onRetry, 
             <p className="seeding-scroll-hint">아래로 스크롤하면 더 있어 ↓</p>
           )}
         </article>
-      ))}
+        );
+      })}
 
       {/* 사용법 3줄 요약 */}
       <div className="usage-hint">

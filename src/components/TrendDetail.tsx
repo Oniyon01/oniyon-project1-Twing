@@ -3,6 +3,7 @@ import type { Trend, VoteType, Comment } from '../types';
 import VoteButtons from './VoteButtons';
 import { castVote, changeVote, removeVote, fetchComments, fetchCommentCount, addComment, incrementViews } from '../lib/trends';
 import CommentAuthor from './CommentAuthor';
+import { getCategoryMeta, getCategoryColor } from '../theme/categories';
 import './TrendDetail.css';
 
 type Platform = 'tiktok' | 'insta' | 'shorts';
@@ -11,14 +12,6 @@ const PLATFORM_OPTIONS: { type: Platform; label: string; emoji: string }[] = [
   { type: 'insta',   label: '인스타',     emoji: '📸' },
   { type: 'shorts',  label: '유튜브쇼츠', emoji: '▶️' },
 ];
-
-const CATEGORY_LABEL: Record<string, string> = {
-  challenge: '🔥 챌린지',
-  cafe:      '☕ 카페·푸드',
-  travel:    '✈️ 여행',
-  lifestyle: '🌿 라이프',
-  tech:      '🤖 테크',
-};
 
 interface Props {
   trend: Trend;
@@ -123,14 +116,19 @@ export default function TrendDetail({ trend, isLoggedIn, onLoginRequired, onBack
     }
   }
 
-  const catLabel = CATEGORY_LABEL[trend.category] ?? trend.category;
+  const catMeta = getCategoryMeta(trend.category);
 
   return (
     <div className="trend-detail">
       {/* 헤더 */}
       <div className="detail-header">
         <button className="detail-back" onClick={onBack}>← 뒤로</button>
-        <span className={`cat-badge cat-badge--${trend.category}`}>{catLabel}</span>
+        <span
+          className="cat-badge"
+          style={catMeta ? { background: catMeta.bg, color: getCategoryColor(catMeta), border: `1px solid ${catMeta.border}` } : undefined}
+        >
+          {catMeta ? `${catMeta.emoji} ${catMeta.key}` : trend.category}
+        </span>
       </div>
 
       {/* 본문 */}
