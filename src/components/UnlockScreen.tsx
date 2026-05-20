@@ -53,7 +53,7 @@ export default function UnlockScreen({ deepAnalysis: da, variant, onBack }: Prop
         <div className="unlock-variant-summary">
           <span className="unlock-variant-name">{variant.challenge_name}</span>
           <div className="unlock-variant-tags">
-            {variant.hashtags.map((tag) => (
+            {(variant.hashtags ?? []).map((tag) => (
               <span key={tag} className="hashtag-chip small">{tag}</span>
             ))}
           </div>
@@ -75,11 +75,11 @@ export default function UnlockScreen({ deepAnalysis: da, variant, onBack }: Prop
         <div className="unlock-section">
           <h3 className="unlock-section-title">💡 왜 터질 수 있어</h3>
           <p className="unlock-mechanism">{da.why_it_works.core_mechanism}</p>
-          {da.why_it_works.similar_success.length > 0 && (
+          {(da.why_it_works.similar_success ?? []).length > 0 && (
             <div className="unlock-similar">
               <p className="unlock-similar-label">유사 성공 사례</p>
               <ul className="unlock-similar-list">
-                {da.why_it_works.similar_success.map((s, i) => (
+                {(da.why_it_works.similar_success ?? []).map((s, i) => (
                   <li key={i} className="unlock-similar-item">
                     <span className="unlock-similar-name">{s.name}</span>
                     <span className="unlock-similar-meta">{s.year} · {s.scale}</span>
@@ -159,11 +159,11 @@ export default function UnlockScreen({ deepAnalysis: da, variant, onBack }: Prop
             <span className="unlock-risk-score">{da.why_it_might_fail.saturation_risk}/10</span>
           </div>
           <p className="unlock-risk-difficulty">{da.why_it_might_fail.execution_difficulty}</p>
-          {da.why_it_might_fail.outdated_patterns.length > 0 && (
+          {(da.why_it_might_fail.outdated_patterns ?? []).length > 0 && (
             <div className="unlock-outdated">
               <p className="unlock-outdated-label">비슷한 지난 트렌드</p>
               <div className="unlock-outdated-chips">
-                {da.why_it_might_fail.outdated_patterns.map((p) => (
+                {(da.why_it_might_fail.outdated_patterns ?? []).map((p) => (
                   <span key={p} className="unlock-outdated-chip">{p}</span>
                 ))}
               </div>
@@ -181,7 +181,7 @@ export default function UnlockScreen({ deepAnalysis: da, variant, onBack }: Prop
             <p className="unlock-how-win-diff">{da.how_to_win.differentiator}</p>
           </div>
           <ul className="unlock-pitfalls">
-            {da.how_to_win.pitfalls_to_avoid.map((p) => (
+            {(da.how_to_win.pitfalls_to_avoid ?? []).map((p) => (
               <li key={p} className="unlock-pitfall-item">
                 <span className="unlock-pitfall-icon">✕</span>
                 <span>{p}</span>

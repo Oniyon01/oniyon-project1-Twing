@@ -1,7 +1,8 @@
 import type { IdeaInput, VariantsResult, DeepAnalysis } from '../types';
 
-const BASE_URL = import.meta.env.VITE_WORKERS_URL
-  ?? (import.meta.env.DEV ? 'http://localhost:8787' : '');
+// DEV: Vite proxy가 /api/* → localhost:8787 으로 포워딩 (Codespace 환경 대응)
+// PROD: VITE_WORKERS_URL 환경변수에 Workers 배포 URL 설정
+const BASE_URL = import.meta.env.VITE_WORKERS_URL ?? '';
 
 async function post<T>(path: string, body: unknown): Promise<T> {
   const res = await fetch(`${BASE_URL}${path}`, {

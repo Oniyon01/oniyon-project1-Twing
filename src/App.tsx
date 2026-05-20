@@ -14,7 +14,7 @@ import UnlockScreen from './components/UnlockScreen';
 import DevPanel from './components/DevPanel';
 import { supabase } from './lib/supabase';
 import { fetchTrends, rowToTrend } from './lib/trends';
-import type { TrendRow } from './lib/trends';
+import type { IdeaRow } from './lib/trends';
 import { generateVariants, deepAnalysis } from './lib/workers';
 import { MOCK_IDEA_INPUT, MOCK_VARIANTS, MOCK_DEEP_ANALYSIS } from './data/mockIdea';
 import type { Trend, IdeaInput, VariantsResult, DeepAnalysis } from './types';
@@ -79,19 +79,22 @@ export default function App() {
 
   useEffect(() => {
     const channel = supabase
-      .channel('trends-changes')
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'trends' }, (payload) => {
-        const row = payload.new as TrendRow;
+      .channel('ideas-changes')
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'ideas' }, (payload) => {
+        const row = payload.new as IdeaRow;
+        if (!row.is_shared) return;
         setTrends((prev) =>
           prev.map((t) =>
             t.id === row.id
-              ? { ...t, votes: { yes: row.votes_yes, no: row.votes_no, maybe: row.votes_maybe } }
+              ? { ...t, votes: { yes: row.try_vote_count, no: 0, maybe: row.watch_vote_count }, likes_count: row.like_count }
               : t
           )
         );
       })
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'trends' }, (payload) => {
-        setTrends((prev) => [rowToTrend(payload.new as TrendRow), ...prev]);
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'ideas' }, (payload) => {
+        const row = payload.new as IdeaRow;
+        if (!row.is_shared) return;
+        setTrends((prev) => [rowToTrend(row), ...prev]);
       })
       .subscribe();
     return () => { supabase.removeChannel(channel); };
