@@ -1,0 +1,5 @@
+# 로컬 개발용 — 이 파일을 .dev.vars로 복사 후 실제 값 입력
+# .dev.vars는 gitignore됨 (절대 커밋 금지)
+
+ANTHROPIC_API_KEY=sk-ant-여기에입력
+SUPABASE_SERVICE_ROLE_KEY=eyJ여기에입력
