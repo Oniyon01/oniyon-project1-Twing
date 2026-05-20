@@ -122,6 +122,7 @@ src/
  │   ├─ IdeaInputScreen.tsx/css ← 아이디어 창작 입력 (Step0: core_idea / Step1: 감정톤·참여구조·차별점 3질문 + 데모버튼)
  │   ├─ VariantsScreen.tsx/css  ← variant 3개 카드 선택 → "피드 공유 + 잠금 해제" CTA
  │   ├─ UnlockScreen.tsx/css    ← 심층 분석 결과 (총평·플랫폼전략·scale_playbook 4단계 타임라인·리스크·이기는법)
+ │   │                              similar_success·outdated_patterns·pitfalls_to_avoid·hashtags: null 방어 처리 (?? [])
  │   ├─ CategoryRanking.tsx/css ← 카테고리별 순위 탭 (CATEGORIES from theme/categories)
  │   ├─ GradeCard.tsx/css       ← 트렌드세터 등급·포인트·스트릭·뱃지 (마이페이지 내 표시)
  │   ├─ CommentAuthor.tsx/css   ← 댓글 작성자 행 (아바타·닉네임·등급칩·뱃지칩·호버 툴팁)
@@ -155,23 +156,27 @@ workers/                        ← 로컬: wrangler dev (localhost:8787), 프�
      ├─ index.js                ← 메인 라우터 (GET / 헬스체크, POST 2개 라우팅)
      ├─ prompts/
      │   └─ wingle.js           ← SYSTEM_PROMPT_A: 윙글이 페르소나 + 2026 트렌드 감각 + 카테고리 가이드 + JSON 스키마
-     │                              SYSTEM_PROMPT_B: 플랫폼 알고리즘 감각 + participation별 플레이북 분기 + 점수 인플레 금지
+     │                              SYSTEM_PROMPT_B: 완전 자립형 — A의 성격·말투·트렌드감각·금지사항을 직접 포함 (A 호출 기억 없으므로)
+     │                              + 플랫폼 알고리즘 감각 + participation별 플레이북 분기 + 점수 인플레 금지
      │                              buildUserPromptA(input): {placeholder} 치환 방식
      │                              buildUserPromptB({core_idea, emotion_tone, participation, variant}): variant를 JSON 직렬화해서 주입
      ├─ routes/
      │   ├─ generate-variants.js ← POST /api/generate-variants
-     │   │                           ensureUser() → Claude A 호출(thinking:adaptive, effort:high, maxTokens:20000)
+     │   │                           ensureUser() → Claude A 호출(maxTokens:4000, thinking 없음)
+     │   │                           differentiator는 선택 필드 (빈 문자열 허용 = "AI가 판단")
      │   │                           validateStrictA 실패 시 1회 재시도 → ideas INSERT (is_shared=false)
      │   └─ deep-analysis.js    ← POST /api/deep-analysis
-     │                              캐시 체크(deep_analysis 이미 있으면 재호출 없이 반환)
-     │                              Claude B 호출(thinking:adaptive, effort:high, maxTokens:20000)
+     │                              캐시 체크: deep_analysis 있고 selected_variant_index 일치 시에만 반환 (다른 variant 선택 시 재호출)
+     │                              Claude B 호출(maxTokens:5000, thinking 없음) + 1회 재시도
      │                              validateStrictB → ideas UPDATE: deep_analysis + is_shared=true + shared_at
      ├─ validators.js            ← validateStrictA/B, validateSoftA
      │                              validateStrictA: category가 CATEGORY_KEY_SET 한글 키인지, variants 3개 형식 검증
      │                              validateStrictB: platform_plans 3개·scale_playbook·verdict 구조 검증
+     │                              + similar_success·outdated_patterns·pitfalls_to_avoid 배열 여부, score 숫자 여부 검증
      └─ lib/
          ├─ claude.js            ← fetch 기반 Claude API 래퍼 (SDK 미사용)
-         │                           thinking·outputConfig 옵션 지원, content 배열에서 text 블록 추출 (thinking 블록 건너뜀)
+         │                           모델: claude-haiku-4-5-20251001 (속도·비용 우선)
+         │                           thinking 옵션 지원, content 배열에서 text 블록 추출 (thinking 블록 건너뜀)
          ├─ supabase.js          ← PostgREST 직접 호출 (insert/getById/update/ensureUser), service_role로 RLS 우회
          │                           ensureUser(id): users 행 없으면 생성 (ignore-duplicates), FK 오류 방지
          ├─ cors.js              ← CORS 헤더, jsonResponse 헬퍼
