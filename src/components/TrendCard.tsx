@@ -194,14 +194,13 @@ export default function TrendCard({ trend, isLoggedIn, onLoginRequired, onOpenDe
         </div>
       </div>
 
-      {/* 제목 + 설명 */}
-      <div className="trend-body trend-body--clickable" onClick={() => onOpenDetail(trend)}>
-        <h2 className="trend-title">{trend.title}</h2>
+      {/* 제목 + 설명 (제목만 클릭으로 상세 진입) */}
+      <div className="trend-body">
+        <h2 className="trend-title trend-title--clickable" onClick={() => onOpenDetail(trend)}>{trend.title}</h2>
         {trend.variant_angle && (
           <span className="trend-angle-badge">💡 {trend.variant_angle}</span>
         )}
         <p className="trend-desc">{trend.description}</p>
-        <span className="trend-detail-hint">자세히 보기 →</span>
       </div>
 
       {/* 작성자 한마디 */}
@@ -211,19 +210,6 @@ export default function TrendCard({ trend, isLoggedIn, onLoginRequired, onOpenDe
           <p className="trend-author-note-text">{trend.author_note}</p>
         </div>
       )}
-
-      {/* 해시태그 */}
-      <div className="hashtag-row">
-        {(trend.hashtags?.length ? trend.hashtags : [trend.hashtag]).filter(Boolean).map((tag) => (
-          <span key={tag} className="hashtag-chip">{tag}</span>
-        ))}
-      </div>
-
-      {/* 윙글이 코멘트 인라인 1줄 */}
-      <div className="wingle-comment-box">
-        <img src="/wingle-3d.png" alt="윙글이" className="wingle-avatar-sm" />
-        <p className="wingle-comment-text">{trend.ai_comment}</p>
-      </div>
 
       {/* 투표 버튼 또는 본인 카드 통계 */}
       <div className="vote-section">
@@ -243,20 +229,29 @@ export default function TrendCard({ trend, isLoggedIn, onLoginRequired, onOpenDe
         </div>
       )}
 
-      {/* 하단 액션바: 댓글 · 공유 */}
+      {/* 해시태그 */}
+      <div className="hashtag-row">
+        {(trend.hashtags?.length ? trend.hashtags : [trend.hashtag]).filter(Boolean).map((tag) => (
+          <span key={tag} className="hashtag-chip">{tag}</span>
+        ))}
+      </div>
+
+      {/* 윙글이 코멘트 인라인 1줄 */}
+      <div className="wingle-comment-box">
+        <img src="/wingle-3d.png" alt="윙글이" className="wingle-avatar-sm" />
+        <p className="wingle-comment-text">{trend.ai_comment}</p>
+      </div>
+
+      {/* 하단 액션바: 댓글 */}
       <div className="card-action-bar">
         <button className="card-action-comment" onClick={() => setShowComments((v) => !v)}>
           <span className="card-action-comment-icon">💬</span>
           <span className="card-action-comment-count">{commentCount ?? 0}</span>
         </button>
-
-        {isOwnCard ? (
-          <button className="card-action-analysis" onClick={() => onOpenDetail(trend)}>
-            📊 상세 분석 보기
-          </button>
-        ) : (
-          <button className="card-action-share">🔗 공유</button>
-        )}
+        <button
+          className="card-action-share"
+          onClick={() => onOpenDetail(trend)}
+        >자세히 보기 →</button>
       </div>
 
       {showComments && (

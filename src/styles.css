@@ -569,6 +569,14 @@ input { font-family: inherit; }
   letter-spacing: -0.3px;
 }
 
+.trend-title--clickable {
+  cursor: pointer;
+}
+
+.trend-title--clickable:hover {
+  color: #A888D8;
+}
+
 .trend-desc {
   font-size: 13.5px;
   color: var(--c-text-muted);

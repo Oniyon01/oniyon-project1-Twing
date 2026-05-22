@@ -134,7 +134,18 @@ export default function TrendDetail({ trend, isLoggedIn, onLoginRequired, onBack
       {/* 본문 */}
       <div className="detail-body">
         <h1 className="detail-title">{trend.title}</h1>
+        {trend.variant_angle && (
+          <span className="trend-angle-badge">💡 {trend.variant_angle}</span>
+        )}
         <p className="detail-desc">{trend.description}</p>
+
+        {/* 작성자 한마디 */}
+        {trend.author_note && (
+          <div className="trend-author-note" style={{ margin: '10px 0' }}>
+            <span className="trend-author-note-icon">✏️</span>
+            <p className="trend-author-note-text">{trend.author_note}</p>
+          </div>
+        )}
 
         <div className="detail-hashtag-row">
           {(trend.hashtags?.length ? trend.hashtags : [trend.hashtag]).filter(Boolean).map((tag) => (
