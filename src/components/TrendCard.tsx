@@ -194,8 +194,8 @@ export default function TrendCard({ trend, isLoggedIn, onLoginRequired, onOpenDe
         </div>
       </div>
 
-      {/* 제목 + 설명 */}
-      <div className="trend-body">
+      {/* 제목 + 설명 — 클릭하면 상세 진입 */}
+      <div className="trend-body trend-body--clickable" onClick={() => onOpenDetail(trend)}>
         <h2 className="trend-title">{trend.title}</h2>
         {trend.variant_angle && (
           <span className="trend-angle-badge">💡 {trend.variant_angle}</span>
@@ -218,14 +218,17 @@ export default function TrendCard({ trend, isLoggedIn, onLoginRequired, onOpenDe
         ))}
       </div>
 
-      {/* 윙글이 코멘트 인라인 1줄 */}
+      {/* 윙글이 코멘트 */}
       <div className="wingle-comment-box">
         <img src="/wingle-3d.png" alt="윙글이" className="wingle-avatar-sm" />
         <p className="wingle-comment-text">{trend.ai_comment}</p>
       </div>
 
-      {/* 투표 버튼 또는 본인 카드 통계 */}
-      <div className="vote-section">
+      {/* 구분선 */}
+      <div className="card-divider" />
+
+      {/* 투표 버튼 */}
+      <div className="vote-section" onClick={(e) => e.stopPropagation()}>
         <VoteButtons
           voted={voted}
           votes={votes}
@@ -242,16 +245,12 @@ export default function TrendCard({ trend, isLoggedIn, onLoginRequired, onOpenDe
         </div>
       )}
 
-      {/* 하단 액션바: 댓글 */}
+      {/* 댓글 버튼 */}
       <div className="card-action-bar">
         <button className="card-action-comment" onClick={() => setShowComments((v) => !v)}>
           <span className="card-action-comment-icon">💬</span>
           <span className="card-action-comment-count">{commentCount ?? 0}</span>
         </button>
-        <button
-          className="card-action-share"
-          onClick={() => onOpenDetail(trend)}
-        >자세히 보기 →</button>
       </div>
 
       {showComments && (

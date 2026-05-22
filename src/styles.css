@@ -661,6 +661,12 @@ input { font-family: inherit; }
   font-style: italic;
 }
 
+.card-divider {
+  height: 1px;
+  background: var(--c-border-line);
+  margin: 4px 14px;
+}
+
 /* ===== VoteButtons ===== */
 .vote-section {
   padding: 8px 14px 6px;
