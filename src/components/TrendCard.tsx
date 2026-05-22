@@ -194,9 +194,9 @@ export default function TrendCard({ trend, isLoggedIn, onLoginRequired, onOpenDe
         </div>
       </div>
 
-      {/* 제목 + 설명 (제목만 클릭으로 상세 진입) */}
+      {/* 제목 + 설명 */}
       <div className="trend-body">
-        <h2 className="trend-title trend-title--clickable" onClick={() => onOpenDetail(trend)}>{trend.title}</h2>
+        <h2 className="trend-title">{trend.title}</h2>
         {trend.variant_angle && (
           <span className="trend-angle-badge">💡 {trend.variant_angle}</span>
         )}
