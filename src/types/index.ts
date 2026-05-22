@@ -87,6 +87,9 @@ export interface Trend {
   author_nickname?: string;
   author_points?: number;
   is_pick_candidate?: boolean;
+  hashtags?: string[];
+  variant_angle?: string;
+  author_note?: string;
 }
 
 export type VoteType = 'yes' | 'no' | 'maybe';

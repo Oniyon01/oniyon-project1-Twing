@@ -5,7 +5,7 @@ import './VariantsScreen.css';
 interface Props {
   variantsResult: VariantsResult;
   ideaInput: IdeaInput;
-  onSelect: (variantIndex: number) => Promise<void>;
+  onSelect: (variantIndex: number, authorNote: string) => Promise<void>;
   onBack: () => void;
 }
 
@@ -17,6 +17,7 @@ const ANGLE_COLORS = [
 
 export default function VariantsScreen({ variantsResult, ideaInput, onSelect, onBack }: Props) {
   const [selected, setSelected] = useState<number | null>(null);
+  const [authorNote, setAuthorNote] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -25,7 +26,7 @@ export default function VariantsScreen({ variantsResult, ideaInput, onSelect, on
     setIsLoading(true);
     setError(null);
     try {
-      await onSelect(selected);
+      await onSelect(selected, authorNote.trim());
     } catch (e) {
       setError(e instanceof Error ? e.message : '윙글이가 잠깐 멈췄어. 다시 시도해봐.');
       setIsLoading(false);
@@ -106,6 +107,24 @@ export default function VariantsScreen({ variantsResult, ideaInput, onSelect, on
             </button>
           ))}
         </div>
+
+        {/* 작성자 한마디 */}
+        {selected !== null && (
+          <div className="variants-author-note-wrap">
+            <label className="variants-author-note-label">
+              ✏️ 작성자 한마디 <span className="variants-author-note-optional">(선택)</span>
+            </label>
+            <textarea
+              className="variants-author-note-input"
+              placeholder="이 아이디어를 떠올린 계기나 하고 싶은 말을 남겨봐..."
+              value={authorNote}
+              onChange={(e) => setAuthorNote(e.target.value.slice(0, 200))}
+              maxLength={200}
+              rows={3}
+            />
+            <span className="variants-author-note-count">{authorNote.length}/200</span>
+          </div>
+        )}
 
         {error && <p className="idea-error">{error}</p>}
 

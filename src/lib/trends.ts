@@ -7,6 +7,7 @@ export interface IdeaRow {
   user_id: string;
   core_idea: string;
   category: string;
+  is_shared: boolean;
   variants: Array<{
     angle: string;
     challenge_name: string;
@@ -16,6 +17,7 @@ export interface IdeaRow {
     variation_seed: string;
   }>;
   selected_variant_index: number | null;
+  author_note: string | null;
   try_vote_count: number;
   watch_vote_count: number;
   like_count: number;
@@ -43,6 +45,9 @@ export function rowToTrend(row: IdeaRow): Trend {
     votes: { yes: row.try_vote_count, no: 0, maybe: row.watch_vote_count },
     likes_count: row.like_count,
     is_seed: false,
+    hashtags: variant?.hashtags ?? [],
+    variant_angle: variant?.angle ?? undefined,
+    author_note: row.author_note ?? undefined,
   };
 }
 
@@ -50,7 +55,7 @@ export function rowToTrend(row: IdeaRow): Trend {
 export async function fetchTrends(): Promise<Trend[]> {
   const { data, error } = await supabase
     .from('ideas')
-    .select('id, user_id, core_idea, category, variants, selected_variant_index, try_vote_count, watch_vote_count, like_count, comment_count, hot_score, created_at, shared_at')
+    .select('id, user_id, core_idea, category, variants, selected_variant_index, author_note, try_vote_count, watch_vote_count, like_count, comment_count, hot_score, created_at, shared_at')
     .eq('is_shared', true)
     .eq('is_hidden', false)
     .order('hot_score', { ascending: false })

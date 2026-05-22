@@ -197,13 +197,26 @@ export default function TrendCard({ trend, isLoggedIn, onLoginRequired, onOpenDe
       {/* 제목 + 설명 */}
       <div className="trend-body trend-body--clickable" onClick={() => onOpenDetail(trend)}>
         <h2 className="trend-title">{trend.title}</h2>
+        {trend.variant_angle && (
+          <span className="trend-angle-badge">💡 {trend.variant_angle}</span>
+        )}
         <p className="trend-desc">{trend.description}</p>
         <span className="trend-detail-hint">자세히 보기 →</span>
       </div>
 
+      {/* 작성자 한마디 */}
+      {trend.author_note && (
+        <div className="trend-author-note">
+          <span className="trend-author-note-icon">✏️</span>
+          <p className="trend-author-note-text">{trend.author_note}</p>
+        </div>
+      )}
+
       {/* 해시태그 */}
       <div className="hashtag-row">
-        <span className="hashtag-chip">{trend.hashtag}</span>
+        {(trend.hashtags?.length ? trend.hashtags : [trend.hashtag]).filter(Boolean).map((tag) => (
+          <span key={tag} className="hashtag-chip">{tag}</span>
+        ))}
       </div>
 
       {/* 윙글이 코멘트 인라인 1줄 */}

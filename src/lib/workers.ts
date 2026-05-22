@@ -26,9 +26,10 @@ export function generateVariants(userId: string, input: IdeaInput): Promise<Vari
   });
 }
 
-export function deepAnalysis(ideaId: string, selectedVariantIndex: number): Promise<DeepAnalysis> {
+export function deepAnalysis(ideaId: string, selectedVariantIndex: number, authorNote?: string): Promise<DeepAnalysis> {
   return post<DeepAnalysis>('/api/deep-analysis', {
     idea_id: ideaId,
     selected_variant_index: selectedVariantIndex,
+    ...(authorNote ? { author_note: authorNote } : {}),
   });
 }

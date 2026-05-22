@@ -24,7 +24,9 @@ type Session = 'intro' | 'feed' | 'auth' | 'mypage' | 'idea-input' | 'idea-varia
 type FeedTab = 'home' | 'winglepick' | 'challenge' | 'ranking';
 
 export default function App() {
-  const [session, setSession] = useState<Session>('intro');
+  const [session, setSession] = useState<Session>(() =>
+    sessionStorage.getItem('tw-session') === 'feed' ? 'feed' : 'intro'
+  );
   const [feedTab, setFeedTab] = useState<FeedTab>('home');
   const [user, setUser] = useState<User | null>(null);
   const [trends, setTrends] = useState<Trend[]>([]);
@@ -49,6 +51,10 @@ export default function App() {
     document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');
     localStorage.setItem('tw-theme', darkMode ? 'dark' : 'light');
   }, [darkMode]);
+
+  useEffect(() => {
+    if (session === 'feed') sessionStorage.setItem('tw-session', 'feed');
+  }, [session]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session: s } }) => {
@@ -83,13 +89,23 @@ export default function App() {
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'ideas' }, (payload) => {
         const row = payload.new as IdeaRow;
         if (!row.is_shared) return;
-        setTrends((prev) =>
-          prev.map((t) =>
-            t.id === row.id
-              ? { ...t, votes: { yes: row.try_vote_count, no: 0, maybe: row.watch_vote_count }, likes_count: row.like_count }
-              : t
-          )
-        );
+        setTrends((prev) => {
+          const exists = prev.some((t) => t.id === row.id);
+          if (exists) {
+            return prev.map((t) =>
+              t.id === row.id
+                ? {
+                    ...t,
+                    votes: { yes: row.try_vote_count, no: 0, maybe: row.watch_vote_count },
+                    likes_count: row.like_count,
+                    author_note: row.author_note ?? undefined,
+                  }
+                : t
+            );
+          }
+          // 처음으로 is_shared=true가 된 아이디어 → 피드 맨 앞에 추가
+          return [rowToTrend(row), ...prev];
+        });
       })
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'ideas' }, (payload) => {
         const row = payload.new as IdeaRow;
@@ -147,7 +163,7 @@ export default function App() {
     setSession('idea-variants');
   }
 
-  async function handleVariantSelect(variantIndex: number): Promise<void> {
+  async function handleVariantSelect(variantIndex: number, authorNote: string): Promise<void> {
     if (!variantsResult) throw new Error('아이디어 정보가 없어');
     // 데모 모드: mock idea_id면 mock 분석 결과 사용
     if (variantsResult.idea_id === 'demo-idea-id') {
@@ -156,7 +172,7 @@ export default function App() {
       setSession('idea-unlock');
       return;
     }
-    const result = await deepAnalysis(variantsResult.idea_id, variantIndex);
+    const result = await deepAnalysis(variantsResult.idea_id, variantIndex, authorNote);
     setSelectedVariantIndex(variantIndex);
     setDeepAnalysisResult(result);
     setSession('idea-unlock');
@@ -190,7 +206,7 @@ export default function App() {
         deepAnalysis={deepAnalysisResult}
         variant={variantsResult.variants[selectedVariantIndex]}
         ideaInput={ideaInput}
-        onBack={() => setSession('feed')}
+        onBack={() => { loadTrends(); setSession('feed'); }}
       />
     );
   }

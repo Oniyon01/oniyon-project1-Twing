@@ -92,6 +92,9 @@ export default function Feed({
             className={`sort-tab${sort === 'hot' ? ' active' : ''}`}
             onClick={() => setSort('hot')}
           >🔥 인기순</button>
+          {onRetry && (
+            <button className="feed-refresh-btn" onClick={onRetry} title="피드 새로고침">↻</button>
+          )}
         </div>
         <EmptyFeed type="new-user" onCreateIdea={onCreateIdea} />
       </div>
@@ -150,6 +153,13 @@ export default function Feed({
           className={`sort-tab${sort === 'hot' ? ' active' : ''}`}
           onClick={() => setSort('hot')}
         >🔥 인기순</button>
+        {onRetry && (
+          <button
+            className="feed-refresh-btn"
+            onClick={onRetry}
+            title="피드 새로고침"
+          >↻</button>
+        )}
       </div>
 
       {/* 카드 목록 */}

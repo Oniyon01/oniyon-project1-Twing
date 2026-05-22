@@ -137,7 +137,9 @@ export default function TrendDetail({ trend, isLoggedIn, onLoginRequired, onBack
         <p className="detail-desc">{trend.description}</p>
 
         <div className="detail-hashtag-row">
-          <span className="hashtag-chip">{trend.hashtag}</span>
+          {(trend.hashtags?.length ? trend.hashtags : [trend.hashtag]).filter(Boolean).map((tag) => (
+            <span key={tag} className="hashtag-chip">{tag}</span>
+          ))}
         </div>
 
         {/* 윙글이 코멘트 */}

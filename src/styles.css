@@ -407,6 +407,26 @@ input { font-family: inherit; }
   color: var(--c-text-sub);
 }
 
+.feed-refresh-btn {
+  padding: 9px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(168, 136, 216, 0.15);
+  background: var(--c-glass);
+  color: var(--c-text-muted);
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.feed-refresh-btn:hover {
+  background: var(--c-glass-md);
+  color: #A888D8;
+  border-color: rgba(168, 136, 216, 0.4);
+  transform: rotate(20deg);
+}
+
 .feed-loading,
 .feed-empty {
   text-align: center;
@@ -553,6 +573,43 @@ input { font-family: inherit; }
   font-size: 13.5px;
   color: var(--c-text-muted);
   line-height: 1.6;
+}
+
+.trend-angle-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #A888D8;
+  background: rgba(168, 136, 216, 0.1);
+  border: 1px solid rgba(168, 136, 216, 0.22);
+  padding: 2px 9px;
+  border-radius: 99px;
+  margin-bottom: 7px;
+}
+
+/* 작성자 한마디 */
+.trend-author-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  margin: 0 14px 10px;
+  padding: 9px 12px;
+  background: var(--c-glass);
+  border-left: 3px solid rgba(212, 160, 32, 0.45);
+  border-radius: 0 10px 10px 0;
+}
+
+.trend-author-note-icon {
+  font-size: 13px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.trend-author-note-text {
+  font-size: 13px;
+  color: var(--c-text-sub);
+  line-height: 1.55;
+  font-style: italic;
 }
 
 /* 해시태그 행 */

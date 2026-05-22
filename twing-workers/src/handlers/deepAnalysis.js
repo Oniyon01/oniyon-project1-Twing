@@ -23,7 +23,7 @@ export async function handleDeepAnalysis(request, env) {
     return badRequestResponse("JSON 형식이 아닌 요청", request);
   }
 
-  const { idea_id, selected_variant_index } = body;
+  const { idea_id, selected_variant_index, author_note } = body;
 
   if (!idea_id) return badRequestResponse("idea_id가 빠졌어", request);
   if (!Number.isInteger(selected_variant_index) ||
@@ -130,6 +130,7 @@ export async function handleDeepAnalysis(request, env) {
       selected_variant_index,
       deep_analysis: parsed,
       shared_at: new Date().toISOString(),
+      ...(author_note ? { author_note: author_note.slice(0, 200) } : {}),
     });
   } catch (e) {
     console.error(`[deep-analysis] DB update failed:`, e.message);

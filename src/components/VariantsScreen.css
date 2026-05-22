@@ -227,6 +227,56 @@
   padding: 5px 8px;
 }
 
+/* ── 작성자 한마디 ── */
+.variants-author-note-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.variants-author-note-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--c-text-sub);
+}
+
+.variants-author-note-optional {
+  font-weight: 400;
+  color: var(--c-text-dim);
+  font-size: 11px;
+}
+
+.variants-author-note-input {
+  width: 100%;
+  padding: 11px 14px;
+  border-radius: 12px;
+  border: 1.5px solid var(--c-border);
+  background: var(--c-surface);
+  color: var(--c-text-main);
+  font-size: 13.5px;
+  font-family: inherit;
+  line-height: 1.55;
+  resize: none;
+  transition: border-color 0.15s;
+  box-sizing: border-box;
+}
+
+.variants-author-note-input:focus {
+  outline: none;
+  border-color: rgba(212, 160, 32, 0.5);
+  box-shadow: 0 0 0 3px rgba(212, 160, 32, 0.08);
+}
+
+.variants-author-note-input::placeholder {
+  color: var(--c-text-dim);
+}
+
+.variants-author-note-count {
+  font-size: 11px;
+  color: var(--c-text-dim);
+  text-align: right;
+}
+
 /* ── CTA ── */
 .variants-unlock-btn {
   width: 100%;
