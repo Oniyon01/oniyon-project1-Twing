@@ -211,6 +211,19 @@ export default function TrendCard({ trend, isLoggedIn, onLoginRequired, onOpenDe
         </div>
       )}
 
+      {/* 해시태그 */}
+      <div className="hashtag-row">
+        {(trend.hashtags?.length ? trend.hashtags : [trend.hashtag]).filter(Boolean).map((tag) => (
+          <span key={tag} className="hashtag-chip">{tag}</span>
+        ))}
+      </div>
+
+      {/* 윙글이 코멘트 인라인 1줄 */}
+      <div className="wingle-comment-box">
+        <img src="/wingle-3d.png" alt="윙글이" className="wingle-avatar-sm" />
+        <p className="wingle-comment-text">{trend.ai_comment}</p>
+      </div>
+
       {/* 투표 버튼 또는 본인 카드 통계 */}
       <div className="vote-section">
         <VoteButtons
@@ -228,19 +241,6 @@ export default function TrendCard({ trend, isLoggedIn, onLoginRequired, onOpenDe
           <button className="login-prompt-btn" onClick={onLoginRequired}>로그인하기</button>
         </div>
       )}
-
-      {/* 해시태그 */}
-      <div className="hashtag-row">
-        {(trend.hashtags?.length ? trend.hashtags : [trend.hashtag]).filter(Boolean).map((tag) => (
-          <span key={tag} className="hashtag-chip">{tag}</span>
-        ))}
-      </div>
-
-      {/* 윙글이 코멘트 인라인 1줄 */}
-      <div className="wingle-comment-box">
-        <img src="/wingle-3d.png" alt="윙글이" className="wingle-avatar-sm" />
-        <p className="wingle-comment-text">{trend.ai_comment}</p>
-      </div>
 
       {/* 하단 액션바: 댓글 */}
       <div className="card-action-bar">
