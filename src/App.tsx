@@ -173,6 +173,10 @@ export default function App() {
       return;
     }
     const result = await deepAnalysis(variantsResult.idea_id, variantIndex, authorNote);
+    // Workers 미배포 상황에서도 author_note가 저장되도록 프론트에서 직접 업데이트
+    if (authorNote) {
+      await supabase.from('ideas').update({ author_note: authorNote }).eq('id', variantsResult.idea_id);
+    }
     setSelectedVariantIndex(variantIndex);
     setDeepAnalysisResult(result);
     setSession('idea-unlock');
