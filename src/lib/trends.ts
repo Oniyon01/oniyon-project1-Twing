@@ -83,7 +83,10 @@ export async function castVote(ideaId: string, voteType: VoteType): Promise<void
   if (!user) return;
   const { error } = await supabase
     .from('feedbacks')
-    .insert({ idea_id: ideaId, user_id: user.id, vote_type: dbType });
+    .upsert(
+      { idea_id: ideaId, user_id: user.id, vote_type: dbType },
+      { onConflict: 'idea_id,user_id' }
+    );
   if (error) throw error;
 }
 
@@ -91,17 +94,14 @@ export async function changeVote(ideaId: string, _oldVote: VoteType, newVote: Vo
   const dbType = toFeedbackVoteType(newVote);
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return;
-  if (!dbType) {
-    // 새 vote가 'no'면 기존 vote 삭제
-    await supabase.from('feedbacks').delete().eq('idea_id', ideaId).eq('user_id', user.id);
-    return;
+  // DELETE 후 INSERT — feedbacks 테이블에 UPDATE RLS 정책이 없으므로
+  await supabase.from('feedbacks').delete().eq('idea_id', ideaId).eq('user_id', user.id);
+  if (dbType) {
+    const { error } = await supabase
+      .from('feedbacks')
+      .insert({ idea_id: ideaId, user_id: user.id, vote_type: dbType });
+    if (error) throw error;
   }
-  const { error } = await supabase
-    .from('feedbacks')
-    .update({ vote_type: dbType })
-    .eq('idea_id', ideaId)
-    .eq('user_id', user.id);
-  if (error) throw error;
 }
 
 export async function removeVote(ideaId: string, _voteType: VoteType): Promise<void> {

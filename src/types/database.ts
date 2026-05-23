@@ -72,93 +72,186 @@ export type Database = {
         }
         Relationships: []
       }
-      comments: {
+      users: {
         Row: {
-          content: string
-          created_at: string
           id: string
-          trend_id: string
+          email: string | null
+          username: string | null
+          avatar_url: string | null
+          author_points: number
+          created_at: string
         }
         Insert: {
-          content: string
+          id: string
+          email?: string | null
+          username?: string | null
+          avatar_url?: string | null
+          author_points?: number
           created_at?: string
-          id?: string
-          trend_id: string
         }
         Update: {
-          content?: string
-          created_at?: string
           id?: string
-          trend_id?: string
+          email?: string | null
+          username?: string | null
+          avatar_url?: string | null
+          author_points?: number
+          created_at?: string
+        }
+        Relationships: []
+      }
+      ideas: {
+        Row: {
+          id: string
+          user_id: string
+          core_idea: string
+          category: string
+          variants: Json
+          selected_variant_index: number | null
+          author_note: string | null
+          try_vote_count: number
+          watch_vote_count: number
+          like_count: number
+          comment_count: number
+          hot_score: number
+          is_shared: boolean
+          is_hidden: boolean
+          created_at: string
+          shared_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          core_idea: string
+          category: string
+          variants?: Json
+          selected_variant_index?: number | null
+          author_note?: string | null
+          try_vote_count?: number
+          watch_vote_count?: number
+          like_count?: number
+          comment_count?: number
+          hot_score?: number
+          is_shared?: boolean
+          is_hidden?: boolean
+          created_at?: string
+          shared_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          core_idea?: string
+          category?: string
+          variants?: Json
+          selected_variant_index?: number | null
+          author_note?: string | null
+          try_vote_count?: number
+          watch_vote_count?: number
+          like_count?: number
+          comment_count?: number
+          hot_score?: number
+          is_shared?: boolean
+          is_hidden?: boolean
+          created_at?: string
+          shared_at?: string | null
+        }
+        Relationships: []
+      }
+      feedbacks: {
+        Row: {
+          id: string
+          idea_id: string
+          user_id: string
+          vote_type: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          idea_id: string
+          user_id: string
+          vote_type: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          idea_id?: string
+          user_id?: string
+          vote_type?: string
+          created_at?: string
         }
         Relationships: [
           {
-            foreignKeyName: "comments_trend_id_fkey"
-            columns: ["trend_id"]
+            foreignKeyName: "feedbacks_idea_id_fkey"
+            columns: ["idea_id"]
             isOneToOne: false
-            referencedRelation: "trends"
+            referencedRelation: "ideas"
             referencedColumns: ["id"]
           },
         ]
       }
-      trends: {
+      likes: {
         Row: {
-          ai_comment: string
-          category: string
-          created_at: string
-          description: string
-          hashtag: string
           id: string
-          image_url: string
-          title: string
-          votes_maybe: number
-          votes_no: number
-          votes_yes: number
+          idea_id: string
+          user_id: string
+          created_at: string
         }
         Insert: {
-          ai_comment?: string
-          category: string
-          created_at?: string
-          description: string
-          hashtag: string
           id?: string
-          image_url?: string
-          title: string
-          votes_maybe?: number
-          votes_no?: number
-          votes_yes?: number
+          idea_id: string
+          user_id: string
+          created_at?: string
         }
         Update: {
-          ai_comment?: string
-          category?: string
-          created_at?: string
-          description?: string
-          hashtag?: string
           id?: string
-          image_url?: string
-          title?: string
-          votes_maybe?: number
-          votes_no?: number
-          votes_yes?: number
+          idea_id?: string
+          user_id?: string
+          created_at?: string
         }
         Relationships: []
+      }
+      comments: {
+        Row: {
+          id: string
+          idea_id: string
+          user_id: string | null
+          content: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          idea_id: string
+          user_id?: string | null
+          content: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          idea_id?: string
+          user_id?: string | null
+          content?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ideas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      increment_vote: {
-        Args: { p_trend_id: string; p_vote_type: string }
-        Returns: undefined
-      }
-      increment_views: {
-        Args: { p_trend_id: string }
-        Returns: undefined
-      }
-      change_vote: {
-        Args: { p_trend_id: string; p_old_vote: string; p_new_vote: string }
-        Returns: undefined
+      calculate_hot_score: {
+        Args: { p_likes: number; p_feedbacks: number; p_try_votes: number; p_watch_votes: number; p_comments: number; p_created_at: string }
+        Returns: number
       }
     }
     Enums: {

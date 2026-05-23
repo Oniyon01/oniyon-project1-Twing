@@ -1,10 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
 import type { Trend, VoteType, Comment } from '../types';
-import VoteButtons from './VoteButtons';
 import { hotScore as calcHotScore, getGrade } from '../lib/ranking';
 import { castVote, changeVote, removeVote, fetchComments, fetchCommentCount, addComment, incrementViews } from '../lib/trends';
 import CommentAuthor from './CommentAuthor';
 import { getCategoryMeta, getCategoryColor } from '../theme/categories';
+
+const VOTE_OPTIONS: { type: VoteType; emoji: string; label: string }[] = [
+  { type: 'yes',   emoji: '🔥', label: '해볼래' },
+  { type: 'maybe', emoji: '👀', label: '구경할래' },
+  { type: 'no',    emoji: '🤔', label: '글쎄' },
+];
 
 interface Props {
   trend: Trend;
@@ -33,7 +38,6 @@ export default function TrendCard({ trend, isLoggedIn, onLoginRequired, onOpenDe
   const [views, setViews] = useState(trend.views);
   const cardRef = useRef<HTMLElement>(null);
   const viewCounted = useRef(false);
-  const [voteLoginPrompt, setVoteLoginPrompt] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -105,28 +109,46 @@ export default function TrendCard({ trend, isLoggedIn, onLoginRequired, onOpenDe
   const grade = getGrade(trend.author_points ?? 0);
 
   function handleVote(type: VoteType) {
-    if (!isLoggedIn) { setVoteLoginPrompt(true); return; }
-    if (isOwnCard) return;
+    if (!isLoggedIn) { onLoginRequired(); return; }
 
     if (voted === type) {
+      const prevVoted = voted;
+      const prevVotes = votes;
       setVoted(null);
       setVotes((prev) => ({ ...prev, [type]: prev[type] - 1 }));
       localStorage.removeItem(storageKey);
-      removeVote(trend.id, type).catch(console.error);
+      removeVote(trend.id, type).catch((e) => {
+        console.error(e);
+        setVoted(prevVoted);
+        setVotes(prevVotes);
+        localStorage.setItem(storageKey, prevVoted);
+      });
       return;
     }
     if (voted) {
       const oldVote = voted;
+      const prevVotes = votes;
       setVoted(type);
       setVotes((prev) => ({ ...prev, [oldVote]: prev[oldVote] - 1, [type]: prev[type] + 1 }));
       localStorage.setItem(storageKey, type);
-      changeVote(trend.id, oldVote, type).catch(console.error);
+      changeVote(trend.id, oldVote, type).catch((e) => {
+        console.error(e);
+        setVoted(oldVote);
+        setVotes(prevVotes);
+        localStorage.setItem(storageKey, oldVote);
+      });
       return;
     }
+    const prevVotes = votes;
     setVoted(type);
     setVotes((prev) => ({ ...prev, [type]: prev[type] + 1 }));
     localStorage.setItem(storageKey, type);
-    castVote(trend.id, type).catch(console.error);
+    castVote(trend.id, type).catch((e) => {
+      console.error(e);
+      setVoted(null);
+      setVotes(prevVotes);
+      localStorage.removeItem(storageKey);
+    });
   }
 
   async function handleCommentSubmit() {
@@ -224,32 +246,31 @@ export default function TrendCard({ trend, isLoggedIn, onLoginRequired, onOpenDe
         <p className="wingle-comment-text">{trend.ai_comment}</p>
       </div>
 
-      {/* 구분선 */}
-      <div className="card-divider" />
-
       {/* 투표 버튼 */}
-      <div className="vote-section" onClick={(e) => e.stopPropagation()}>
-        <VoteButtons
-          voted={voted}
-          votes={votes}
-          onVote={handleVote}
-          isOwnCard={isOwnCard}
-          hotScoreValue={hs}
-        />
+      <div className="vote-buttons" onClick={(e) => e.stopPropagation()}>
+        {VOTE_OPTIONS.map(({ type, emoji, label }) => (
+          <button
+            key={type}
+            className={`vote-btn${voted === type ? ' vote-btn--on' : ''}`}
+            onClick={(e) => { e.stopPropagation(); handleVote(type); }}
+          >
+            {emoji} {label} <span className="vote-btn-count">{votes[type]}</span>
+          </button>
+        ))}
       </div>
-
-      {voteLoginPrompt && (
-        <div className="login-prompt">
-          투표하려면 로그인이 필요해요.
-          <button className="login-prompt-btn" onClick={onLoginRequired}>로그인하기</button>
+      {isOwnCard && hs !== undefined && (
+        <div className="own-hot-score" onClick={(e) => e.stopPropagation()}>
+          ▲ 핫점수 {hs}
         </div>
       )}
 
-      {/* 댓글 버튼 */}
-      <div className="card-action-bar">
-        <button className="card-action-comment" onClick={() => setShowComments((v) => !v)}>
-          <span className="card-action-comment-icon">💬</span>
-          <span className="card-action-comment-count">{commentCount ?? 0}</span>
+      {/* 댓글달기 버튼 */}
+      <div className="card-comment-center-wrap">
+        <button
+          className="card-comment-center-btn"
+          onClick={(e) => { e.stopPropagation(); setShowComments((v) => !v); }}
+        >
+          💬 댓글달기{commentCount ? ` (${commentCount})` : ''}
         </button>
       </div>
 

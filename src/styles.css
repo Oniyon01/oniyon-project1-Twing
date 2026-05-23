@@ -661,20 +661,13 @@ input { font-family: inherit; }
   font-style: italic;
 }
 
-.card-divider {
-  height: 1px;
-  background: var(--c-border-line);
-  margin: 4px 14px;
-}
 
 /* ===== VoteButtons ===== */
-.vote-section {
-  padding: 8px 14px 6px;
-}
 
 .vote-buttons {
   display: flex;
   gap: 6px;
+  padding: 2px 14px 8px;
 }
 
 .vote-btn {
@@ -718,7 +711,16 @@ input { font-family: inherit; }
   gap: 8px;
 }
 
-/* 본인 카드 통계 그리드 (4칸) */
+/* 본인 카드 핫점수 표시 */
+.own-hot-score {
+  font-size: 11px;
+  color: #FFC580;
+  text-align: right;
+  padding: 0 14px 6px;
+  font-weight: 600;
+}
+
+/* 본인 카드 통계 그리드 (4칸, 레거시) */
 .vote-stats-grid {
   display: flex;
   border-radius: 8px;
@@ -756,43 +758,29 @@ input { font-family: inherit; }
 }
 
 /* 하단 액션바 */
-.card-action-bar {
+/* 댓글달기 버튼 (가운데 정렬) */
+.card-comment-center-wrap {
   display: flex;
-  align-items: center;
-  padding: 0 14px 10px;
-  border-top: 1px solid var(--c-border-line);
-  margin-top: 4px;
-  gap: 4px;
+  justify-content: center;
+  padding: 6px 14px 12px;
 }
 
-/* 댓글 버튼 */
-.card-action-comment {
-  display: flex;
-  align-items: center;
-  gap: 5px;
+.card-comment-center-btn {
   background: none;
-  border: none;
+  border: 1px solid var(--c-border-line);
+  border-radius: 20px;
   color: var(--c-text-muted);
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
-  padding: 8px 10px;
+  padding: 7px 20px;
   font-family: inherit;
-  transition: color 0.15s;
+  transition: color 0.15s, border-color 0.15s;
 }
 
-.card-action-comment:hover {
+.card-comment-center-btn:hover {
   color: var(--c-text-sub);
-}
-
-.card-action-comment-icon {
-  font-size: 15px;
-  line-height: 1;
-}
-
-.card-action-comment-count {
-  font-size: 13px;
-  font-weight: 600;
+  border-color: var(--c-text-faint);
 }
 
 /* 공유 / 상세 분석 버튼 */
