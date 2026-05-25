@@ -82,10 +82,12 @@ export interface Trend {
     maybe: number;
   };
   likes_count?: number;
+  hot_score?: number;
   is_seed?: boolean;
   user_id?: string;
   author_nickname?: string;
   author_points?: number;
+  author_avatar_url?: string;
   is_pick_candidate?: boolean;
   hashtags?: string[];
   variant_angle?: string;

@@ -13,6 +13,9 @@ interface Props {
   onSetNewUserMode: (v: boolean) => void;
   onSetOnboarded: () => void;
   onRetry: () => void;
+  onSimulateHotTick: () => void;
+  onResetHotBaseline: () => void;
+  onSimulateRealtimeTick: () => void;
 }
 
 const DEMO_USER_ID = 'user-demo-1';
@@ -20,14 +23,22 @@ const DEMO_USER_ID = 'user-demo-1';
 export default function DevPanel({
   trends, isError, currentUserIdOverride, newUserMode,
   onToggleError, onSetTrends, onSetUserOverride, onSetNewUserMode, onSetOnboarded, onRetry,
+  onSimulateHotTick, onResetHotBaseline, onSimulateRealtimeTick,
 }: Props) {
   const [open, setOpen] = useState(false);
   const [log, setLog] = useState('');
   const [, tick] = useState(0);
+  const [votePerClick, setVotePerClick] = useState(30);
 
   const isOnboarded = !newUserMode && localStorage.getItem('twing_onboarded') === '1';
   const isOwnCardMode = currentUserIdOverride === DEMO_USER_ID;
-  const firstTrend = trends[0];
+  // 피드 최신순 기준 첫 번째 카드 (사용자가 화면에서 보는 카드와 일치)
+  const newestFirstIdx = trends.length > 0
+    ? trends.reduce((best, t, i) =>
+        new Date(t.created_at).getTime() > new Date(trends[best].created_at).getTime() ? i : best
+      , 0)
+    : 0;
+  const firstTrend = trends[newestFirstIdx];
   const firstIsPickCandidate = (firstTrend?.votes.yes ?? 0) >= 300;
 
   function toast(msg: string) {
@@ -65,7 +76,7 @@ export default function DevPanel({
   function handlePickToggle() {
     if (!firstTrend) return;
     const updated = trends.map((t, i) =>
-      i === 0 ? { ...t, votes: { ...t.votes, yes: firstIsPickCandidate ? 10 : 350 } } : t
+      i === newestFirstIdx ? { ...t, votes: { ...t.votes, yes: firstIsPickCandidate ? 10 : 350 } } : t
     );
     onSetTrends(updated);
     toast(firstIsPickCandidate ? '⬇️ 픽 후보 비활성화 (yes: 10)' : '🌟 픽 후보 활성화 (yes: 350)');
@@ -82,16 +93,40 @@ export default function DevPanel({
   }
 
   function handleAddVotes() {
+    const yes = votePerClick > 0 ? votePerClick : Math.floor(Math.random() * 50 + 10);
+    const maybe = votePerClick > 0 ? Math.round(votePerClick * 0.5) : Math.floor(Math.random() * 30 + 5);
+    const no = votePerClick > 0 ? Math.round(votePerClick * 0.2) : Math.floor(Math.random() * 15 + 2);
     const updated = trends.map((t) => ({
       ...t,
-      votes: {
-        yes: t.votes.yes + Math.floor(Math.random() * 50 + 10),
-        maybe: t.votes.maybe + Math.floor(Math.random() * 30 + 5),
-        no: t.votes.no + Math.floor(Math.random() * 15 + 2),
-      },
+      votes: { yes: t.votes.yes + yes, maybe: t.votes.maybe + maybe, no: t.votes.no + no },
     }));
     onSetTrends(updated);
-    toast('🗳️ 투표 랜덤 추가됨');
+    toast(`🗳️ 전체 카드 투표 +${yes}/${maybe}/${no} 추가됨`);
+  }
+
+  function handleFocusVote() {
+    if (!firstTrend) return;
+    const yes = votePerClick > 0 ? votePerClick : 50;
+    const updated = trends.map((t, i) =>
+      i === newestFirstIdx ? { ...t, votes: { ...t.votes, yes: t.votes.yes + yes } } : t
+    );
+    onSetTrends(updated);
+    toast(`🎯 최신 카드에 🔥+${yes}표 집중 투표됨`);
+  }
+
+  function handleSimHot() {
+    onSimulateHotTick();
+    toast('🔥 HOT 5분 경과 시뮬 → 피드에서 HOT 뱃지 확인');
+  }
+
+  function handleResetHotBaseline() {
+    onResetHotBaseline();
+    toast('🔄 HOT 기준점 리셋 → 다음 시뮬부터 새 기준 적용');
+  }
+
+  function handleSimRealtime() {
+    onSimulateRealtimeTick();
+    toast('📡 실시간 30분 경과 시뮬 → 윙글픽 탭 확인');
   }
 
   function handleAddSeeds() {
@@ -225,12 +260,43 @@ export default function DevPanel({
           {/* ── 숫자 생성기 ── */}
           <div className="dev-section">
             <p className="dev-section-label">🎲 숫자 생성기</p>
+            <div className="dev-vote-count-row">
+              <label className="dev-vote-count-label">회당 투표 수</label>
+              <input
+                type="number"
+                className="dev-vote-count-input"
+                min={1}
+                max={9999}
+                value={votePerClick}
+                onChange={(e) => setVotePerClick(Math.max(1, parseInt(e.target.value) || 1))}
+              />
+              <span className="dev-vote-count-unit">표</span>
+            </div>
             <div className="dev-btn-row">
               <button className="dev-btn default" onClick={handleAddLikes}>❤️ 좋아요 +랜덤</button>
-              <button className="dev-btn default" onClick={handleAddVotes}>🗳️ 투표 +랜덤</button>
+              <button className="dev-btn default" onClick={handleAddVotes}>🗳️ 전체 카드 투표</button>
             </div>
             <p className="dev-note">
-              트렌드 {trends.length}개 · 첫 카드 🔥{firstTrend?.votes.yes ?? 0} · ❤️{firstTrend?.likes_count ?? 0}
+              트렌드 {trends.length}개 · 최신카드 🔥{firstTrend?.votes.yes ?? 0} · ❤️{firstTrend?.likes_count ?? 0}
+            </p>
+          </div>
+
+          {/* ── 랭킹 시뮬레이터 ── */}
+          <div className="dev-section">
+            <p className="dev-section-label">🏆 랭킹 시뮬레이터</p>
+            <button className="dev-btn hot full" onClick={handleFocusVote}>
+              🎯 첫 카드 집중 +{votePerClick}표 (HOT 테스트용)
+            </button>
+            <div className="dev-btn-row" style={{ marginTop: 6 }}>
+              <button className="dev-btn hot" onClick={handleSimHot}>🔥 5분 경과 (HOT)</button>
+              <button className="dev-btn active" onClick={handleSimRealtime}>📡 30분 경과 (실시간)</button>
+            </div>
+            <button className="dev-btn default full" onClick={handleResetHotBaseline}>
+              🔄 HOT 기준점 리셋
+            </button>
+            <p className="dev-note">
+              순서: ① 집중투표 → ② 5분 경과 → 피드 HOT 뱃지 확인<br/>
+              기준점 리셋 후 재시뮬 가능 · 실시간TOP10: 30분 경과
             </p>
           </div>
 

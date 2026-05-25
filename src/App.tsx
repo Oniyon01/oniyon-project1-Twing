@@ -33,6 +33,7 @@ export default function App() {
   const [trendsLoading, setTrendsLoading] = useState(true);
   const [trendsError, setTrendsError] = useState(false);
   const [detailTrend, setDetailTrend] = useState<Trend | null>(null);
+  const [detailOrigin, setDetailOrigin] = useState<Session>('feed');
   const [darkMode, setDarkMode] = useState<boolean>(() => {
     return localStorage.getItem('tw-theme') !== 'light';
   });
@@ -40,6 +41,9 @@ export default function App() {
   const [devErrorOverride, setDevErrorOverride] = useState(false);
   const [devNewUserMode, setDevNewUserMode] = useState(false);
   const [devOnboarded, setDevOnboarded] = useState(false);
+  const [hotSimTick, setHotSimTick] = useState(0);
+  const [hotResetTick, setHotResetTick] = useState(0);
+  const [realtimeSimTick, setRealtimeSimTick] = useState(0);
 
   // ── 아이디어 창작 플로우 상태 ──
   const [ideaInput, setIdeaInput] = useState<IdeaInput | null>(null);
@@ -98,6 +102,7 @@ export default function App() {
                     ...t,
                     votes: { yes: row.try_vote_count, no: 0, maybe: row.watch_vote_count },
                     likes_count: row.like_count,
+                    hot_score: row.hot_score,
                     author_note: row.author_note ?? undefined,
                   }
                 : t
@@ -234,6 +239,12 @@ export default function App() {
         user={user}
         onBack={() => setSession('feed')}
         onLogout={handleLogout}
+        onTrendDeleted={(id) => setTrends((prev) => prev.filter((t) => t.id !== id))}
+        onOpenDetail={(trend) => {
+          setDetailTrend(trend);
+          setDetailOrigin('mypage');
+          setSession('feed');
+        }}
       />
     );
   }
@@ -280,7 +291,7 @@ export default function App() {
             trend={detailTrend}
             isLoggedIn={!!user}
             onLoginRequired={handleLoginRequired}
-            onBack={() => setDetailTrend(null)}
+            onBack={() => { setDetailTrend(null); setSession(detailOrigin); setDetailOrigin('feed'); }}
             currentUserId={user?.id}
           />
         ) : (
@@ -298,11 +309,14 @@ export default function App() {
                 onRetry={loadTrends}
                 forceNewUser={devNewUserMode}
                 forceOnboarded={devOnboarded}
+                hotSimTick={hotSimTick}
+                hotResetTick={hotResetTick}
+                realtimeSimTick={realtimeSimTick}
               />
             )}
-            {feedTab === 'winglepick' && (
-              <WinglePick trends={trends} loading={trendsLoading} onOpenDetail={setDetailTrend} />
-            )}
+            <div style={{ display: feedTab === 'winglepick' ? 'flex' : 'none', justifyContent: 'center', width: '100%' }}>
+              <WinglePick trends={trends} loading={trendsLoading} onOpenDetail={setDetailTrend} realtimeSimTick={realtimeSimTick} />
+            </div>
             {feedTab === 'challenge' && (
               <ChallengeBoard
                 trends={trends}
@@ -367,6 +381,9 @@ export default function App() {
         onSetNewUserMode={(v) => { setDevNewUserMode(v); if (v) setDevOnboarded(false); }}
         onSetOnboarded={() => { localStorage.setItem('twing_onboarded', '1'); setDevOnboarded(true); setDevNewUserMode(false); }}
         onRetry={loadTrends}
+        onSimulateHotTick={() => setHotSimTick((n) => n + 1)}
+        onResetHotBaseline={() => setHotResetTick((n) => n + 1)}
+        onSimulateRealtimeTick={() => setRealtimeSimTick((n) => n + 1)}
       />
     </div>
   );

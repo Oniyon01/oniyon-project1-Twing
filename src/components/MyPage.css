@@ -330,6 +330,251 @@
   color: var(--c-text-faint);
 }
 
+/* ── 내 피드 목록 ─────────────────────────────── */
+
+.myfeeds-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.myfeed-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(168, 136, 216, 0.08);
+}
+
+.myfeed-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.myfeed-item:first-child {
+  padding-top: 0;
+}
+
+.myfeed-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.myfeed-cat {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 99px;
+  align-self: flex-start;
+}
+
+.myfeed-body--clickable {
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.15s;
+  padding: 4px 6px;
+  margin: -4px -6px;
+}
+
+.myfeed-body--clickable:hover {
+  background: rgba(168, 136, 216, 0.07);
+}
+
+.myfeed-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--c-text);
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.myfeed-meta {
+  margin: 0;
+  font-size: 11px;
+  color: var(--c-text-faint);
+}
+
+/* ⋯ 메뉴 */
+.myfeed-menu-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.myfeed-menu-btn {
+  background: transparent;
+  border: none;
+  color: var(--c-text-faint);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+  line-height: 1;
+  transition: background 0.15s, color 0.15s;
+}
+
+.myfeed-menu-btn:hover {
+  background: rgba(168, 136, 216, 0.1);
+  color: var(--c-text-muted);
+}
+
+.myfeed-menu-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: var(--c-overlay);
+  border: 1px solid rgba(168, 136, 216, 0.2);
+  border-radius: 10px;
+  padding: 4px;
+  min-width: 130px;
+  z-index: 200;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.myfeed-menu-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  padding: 9px 12px;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.myfeed-menu-item--danger {
+  color: #f87171;
+}
+
+.myfeed-menu-item--danger:hover {
+  background: rgba(248, 113, 113, 0.1);
+}
+
+/* ── 삭제 확인 다이얼로그 ──────────────────────── */
+
+.myfeeds-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  backdrop-filter: blur(3px);
+  animation: overlayIn 0.15s ease;
+}
+
+@keyframes overlayIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.myfeeds-dialog {
+  background: var(--c-panel);
+  border: 1px solid rgba(248, 113, 113, 0.25);
+  border-radius: 18px;
+  padding: 28px 24px 24px;
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: dialogIn 0.18s ease;
+}
+
+@keyframes dialogIn {
+  from { opacity: 0; transform: scale(0.94) translateY(8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.myfeeds-dialog-title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--c-text-head);
+  text-align: center;
+}
+
+.myfeeds-dialog-card {
+  margin: 0;
+  font-size: 13px;
+  color: var(--c-text-muted);
+  text-align: center;
+  padding: 10px 14px;
+  background: rgba(168, 136, 216, 0.06);
+  border-radius: 10px;
+  line-height: 1.5;
+  word-break: keep-all;
+}
+
+.myfeeds-dialog-warning {
+  margin: 0;
+  font-size: 12px;
+  color: #fbbf24;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.myfeeds-dialog-btns {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.myfeeds-dialog-cancel {
+  flex: 1;
+  padding: 12px;
+  background: transparent;
+  border: 1px solid var(--c-border);
+  border-radius: 12px;
+  color: var(--c-text-muted);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.myfeeds-dialog-cancel:hover:not(:disabled) {
+  border-color: var(--c-text-faint);
+}
+
+.myfeeds-dialog-delete {
+  flex: 1;
+  padding: 12px;
+  background: rgba(248, 113, 113, 0.12);
+  border: 1px solid rgba(248, 113, 113, 0.4);
+  border-radius: 12px;
+  color: #f87171;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.myfeeds-dialog-delete:hover:not(:disabled) {
+  background: rgba(248, 113, 113, 0.2);
+  border-color: #f87171;
+}
+
+.myfeeds-dialog-cancel:disabled,
+.myfeeds-dialog-delete:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .mypage-danger-btns {
   display: flex;
   gap: 10px;

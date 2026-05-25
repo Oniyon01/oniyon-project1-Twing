@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import type { Trend, VoteType, Comment } from '../types';
-import { hotScore as calcHotScore, getGrade } from '../lib/ranking';
+import { getGrade } from '../lib/ranking';
 import { castVote, changeVote, removeVote, fetchComments, fetchCommentCount, addComment, incrementViews } from '../lib/trends';
 import CommentAuthor from './CommentAuthor';
 import { getCategoryMeta, getCategoryColor } from '../theme/categories';
@@ -17,6 +17,8 @@ interface Props {
   onLoginRequired: () => void;
   onOpenDetail: (trend: Trend) => void;
   currentUserId?: string;
+  hotRank?: number;
+  realtimeRank?: number;
 }
 
 function timeAgo(dateStr: string): string {
@@ -28,7 +30,7 @@ function timeAgo(dateStr: string): string {
   return `${Math.floor(hours / 24)}일`;
 }
 
-export default function TrendCard({ trend, isLoggedIn, onLoginRequired, onOpenDetail, currentUserId }: Props) {
+export default function TrendCard({ trend, isLoggedIn, onLoginRequired, onOpenDetail, currentUserId, hotRank, realtimeRank }: Props) {
   const storageKey = `twing_voted_${trend.id}`;
 
   const [voted, setVoted] = useState<VoteType | null>(
@@ -99,13 +101,11 @@ export default function TrendCard({ trend, isLoggedIn, onLoginRequired, onOpenDe
       .finally(() => setCommentsLoading(false));
   }, [showComments, trend.id]);
 
+  // suppress unused warning — views used for intersection observer side-effect
+  void views;
+
   const isOwnCard = !!(currentUserId && trend.user_id && trend.user_id === currentUserId);
-  const isPickCandidate = !!(trend.is_pick_candidate || votes.yes >= 300);
-
-  const hs = isOwnCard
-    ? Math.round(calcHotScore({ ...trend, votes, views }))
-    : undefined;
-
+  const isPickCandidate = !!(trend.is_pick_candidate || trend.votes.yes >= 300);
   const grade = getGrade(trend.author_points ?? 0);
 
   function handleVote(type: VoteType) {
@@ -170,6 +170,8 @@ export default function TrendCard({ trend, isLoggedIn, onLoginRequired, onOpenDe
     'trend-card',
     isPickCandidate ? 'trend-card--gold' : '',
     isOwnCard ? 'trend-card--own' : '',
+    hotRank ? 'trend-card--hot' : '',
+    realtimeRank ? 'trend-card--realtime' : '',
   ].filter(Boolean).join(' ');
 
   return (
@@ -177,8 +179,22 @@ export default function TrendCard({ trend, isLoggedIn, onLoginRequired, onOpenDe
       {isPickCandidate && (
         <div className="pick-badge">🌟 윙글이 픽 후보</div>
       )}
+      {(hotRank || realtimeRank) && (
+        <div className="trend-card-badges-left">
+          {hotRank && (
+            <span className={`hot-rank-badge${hotRank <= 3 ? ' hot-rank-badge--top' : ''}`}>
+              🔥 HOT #{hotRank}
+            </span>
+          )}
+          {realtimeRank && (
+            <span className={`realtime-rank-badge${realtimeRank <= 3 ? ' realtime-rank-badge--top' : ''}`}>
+              🏆 실시간 #{realtimeRank}
+            </span>
+          )}
+        </div>
+      )}
 
-      {/* 메타 행: 카테고리 · 작성자 · 시간 · ⋯ */}
+      {/* 메타 행: 카테고리 · 작성자 프로필 · 시간 · ⋯ */}
       <div className="card-meta">
         <span
           className="cat-badge"
@@ -186,11 +202,28 @@ export default function TrendCard({ trend, isLoggedIn, onLoginRequired, onOpenDe
         >
           {catMeta ? `${catMeta.emoji} ${catMeta.key}` : trend.category}
         </span>
-        <span className="card-author">
-          {trend.author_nickname
-            ? `@${trend.author_nickname} · ${grade.icon} ${grade.name}`
-            : `${grade.icon} ${grade.name}`}
-        </span>
+
+        {/* 작성자 프로필 블록 */}
+        <div className="card-profile">
+          {trend.author_avatar_url ? (
+            <img src={trend.author_avatar_url} alt="" className="card-profile-avatar" />
+          ) : (
+            <div className="card-profile-avatar-placeholder">
+              {(trend.author_nickname || '?')[0].toUpperCase()}
+            </div>
+          )}
+          <span className="card-profile-nick">
+            {trend.author_nickname ? `@${trend.author_nickname}` : '익명'}
+          </span>
+          <span className="card-profile-grade">{grade.name}</span>
+
+          {/* 호버 말풍선 */}
+          <div className="card-profile-tooltip">
+            <strong>{grade.icon} Lv.{grade.level} {grade.name}</strong>
+            <span>{grade.story}</span>
+          </div>
+        </div>
+
         <span className="card-time">{timeAgo(trend.created_at)}</span>
         {isOwnCard && <span className="own-badge">내 카드</span>}
         <div className="card-more-wrap" ref={menuRef}>
@@ -258,11 +291,6 @@ export default function TrendCard({ trend, isLoggedIn, onLoginRequired, onOpenDe
           </button>
         ))}
       </div>
-      {isOwnCard && hs !== undefined && (
-        <div className="own-hot-score" onClick={(e) => e.stopPropagation()}>
-          ▲ 핫점수 {hs}
-        </div>
-      )}
 
       {/* 댓글달기 버튼 */}
       <div className="card-comment-center-wrap">

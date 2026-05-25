@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { Trend } from '../types';
 import { hotScore, totalScore, isThisWeek } from '../lib/ranking';
 import './WinglePick.css';
+
+const REALTIME_INTERVAL_MS = 30 * 60 * 1000; // 30분
 
 type PickTab = 'realtime' | 'weekly' | 'hall';
 
@@ -9,23 +11,45 @@ interface Props {
   trends: Trend[];
   loading: boolean;
   onOpenDetail: (trend: Trend) => void;
+  realtimeSimTick?: number;
 }
 
 const TABS: { key: PickTab; emoji: string; label: string; badge: string }[] = [
-  { key: 'realtime', emoji: '🔥', label: '실시간 TOP 10', badge: '1시간마다 업데이트' },
+  { key: 'realtime', emoji: '🔥', label: '실시간 TOP 10', badge: '30분마다 업데이트' },
   { key: 'weekly',   emoji: '🏆', label: '주간 TOP 10',   badge: '매주 일요일 자정 선정' },
   { key: 'hall',     emoji: '🏛️', label: '명예전당',      badge: '역대 윙글이 픽' },
 ];
 
 const MEDAL: Record<number, string> = { 0: '🥇', 1: '🥈', 2: '🥉' };
 
-export default function WinglePick({ trends, loading, onOpenDetail }: Props) {
+export default function WinglePick({ trends, loading, onOpenDetail, realtimeSimTick }: Props) {
   const [tab, setTab] = useState<PickTab>('realtime');
+
+  // 실시간 TOP 10: 30분 스냅샷 (절대 핫점수 기준)
+  const trendsRef = useRef(trends);
+  trendsRef.current = trends;
+  const [realtimeSnapshot, setRealtimeSnapshot] = useState<Trend[]>([]);
+  const snapshotRef = useRef<() => void>(() => {});
+
+  useEffect(() => {
+    const compute = () =>
+      setRealtimeSnapshot(
+        [...trendsRef.current].sort((a, b) => hotScore(b) - hotScore(a)).slice(0, 10)
+      );
+    snapshotRef.current = compute;
+    compute();
+    const id = setInterval(compute, REALTIME_INTERVAL_MS);
+    return () => clearInterval(id);
+  }, []);
+
+  // 개발 패널에서 30분 경과 시뮬
+  useEffect(() => {
+    if (realtimeSimTick) snapshotRef.current();
+  }, [realtimeSimTick]);
 
   const ranked = (() => {
     if (tab === 'realtime') {
-      // 🔥 지금 핫해요 — 핫 점수 TOP 10
-      return [...trends].sort((a, b) => hotScore(b) - hotScore(a)).slice(0, 10);
+      return realtimeSnapshot;
     }
     if (tab === 'weekly') {
       // 🏆 이번 주 TOP 10 — 월요일 0시 이후 등록, 누적 반응 점수 순

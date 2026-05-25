@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import type { User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
+import { fetchMyIdeas, deleteMyIdea } from '../lib/trends';
+import type { Trend } from '../types';
+import { getCategoryMeta, getCategoryColor } from '../theme/categories';
 import GradeCard from './GradeCard';
 import './MyPage.css';
 
@@ -13,13 +16,24 @@ interface Profile {
   card_type: string;
 }
 
+function timeAgo(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return mins < 1 ? '방금' : `${mins}분 전`;
+  const hours = Math.floor(diff / 3600000);
+  if (hours < 24) return `${hours}시간 전`;
+  return `${Math.floor(hours / 24)}일 전`;
+}
+
 interface Props {
   user: User;
   onBack: () => void;
   onLogout: () => void;
+  onTrendDeleted?: (trendId: string) => void;
+  onOpenDetail?: (trend: Trend) => void;
 }
 
-export default function MyPage({ user, onBack, onLogout }: Props) {
+export default function MyPage({ user, onBack, onLogout, onTrendDeleted, onOpenDetail }: Props) {
   const [profile, setProfile] = useState<Profile>({
     nickname: '',
     avatar_url: '',
@@ -35,9 +49,56 @@ export default function MyPage({ user, onBack, onLogout }: Props) {
   const [editSection, setEditSection] = useState<'profile' | 'payment' | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // 내 피드
+  const [myIdeas, setMyIdeas] = useState<Trend[]>([]);
+  const [myIdeasLoading, setMyIdeasLoading] = useState(true);
+  const [menuOpenId, setMenuOpenId] = useState<string | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Trend | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
   useEffect(() => {
     loadProfile();
+    loadMyIdeas();
   }, []);
+
+  useEffect(() => {
+    if (!menuOpenId) return;
+    function handleOutside(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpenId(null);
+      }
+    }
+    document.addEventListener('mousedown', handleOutside);
+    return () => document.removeEventListener('mousedown', handleOutside);
+  }, [menuOpenId]);
+
+  async function loadMyIdeas() {
+    setMyIdeasLoading(true);
+    try {
+      const data = await fetchMyIdeas(user.id);
+      setMyIdeas(data);
+    } catch {
+      // 실패 시 빈 목록 유지
+    } finally {
+      setMyIdeasLoading(false);
+    }
+  }
+
+  async function handleConfirmDelete() {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      await deleteMyIdea(deleteTarget.id);
+      setMyIdeas((prev) => prev.filter((t) => t.id !== deleteTarget.id));
+      onTrendDeleted?.(deleteTarget.id);
+      setDeleteTarget(null);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setDeleting(false);
+    }
+  }
 
   async function loadProfile() {
     const { data } = await supabase
@@ -181,6 +242,57 @@ export default function MyPage({ user, onBack, onLogout }: Props) {
         <div className="mypage-section">
           <h2 className="mypage-section-title">트렌드세터 등급</h2>
           <GradeCard />
+        </div>
+
+        {/* 내 피드 */}
+        <div className="mypage-section">
+          <h2 className="mypage-section-title">내 피드 {myIdeas.length > 0 && `(${myIdeas.length})`}</h2>
+          {myIdeasLoading ? (
+            <p className="mypage-empty">불러오는 중...</p>
+          ) : myIdeas.length === 0 ? (
+            <p className="mypage-empty">아직 공유한 피드가 없어요. 첫 트렌드를 만들어보세요!</p>
+          ) : (
+            <ul className="myfeeds-list">
+              {myIdeas.map((idea) => {
+                const catMeta = getCategoryMeta(idea.category);
+                const isMenuOpen = menuOpenId === idea.id;
+                return (
+                  <li key={idea.id} className="myfeed-item">
+                    <div
+                      className="myfeed-body myfeed-body--clickable"
+                      onClick={() => onOpenDetail?.(idea)}
+                    >
+                      <span
+                        className="myfeed-cat"
+                        style={catMeta ? { background: catMeta.bg, color: getCategoryColor(catMeta), border: `1px solid ${catMeta.border}` } : undefined}
+                      >
+                        {catMeta ? `${catMeta.emoji} ${catMeta.key}` : idea.category}
+                      </span>
+                      <p className="myfeed-title">{idea.title}</p>
+                      <p className="myfeed-meta">
+                        🔥 {idea.votes.yes} &nbsp;·&nbsp; 👀 {idea.votes.maybe} &nbsp;·&nbsp; {timeAgo(idea.created_at)}
+                      </p>
+                    </div>
+                    <div className="myfeed-menu-wrap" ref={isMenuOpen ? menuRef : null}>
+                      <button
+                        className="myfeed-menu-btn"
+                        onClick={() => setMenuOpenId(isMenuOpen ? null : idea.id)}
+                        title="더보기"
+                      >⋯</button>
+                      {isMenuOpen && (
+                        <div className="myfeed-menu-dropdown">
+                          <button
+                            className="myfeed-menu-item myfeed-menu-item--danger"
+                            onClick={() => { setMenuOpenId(null); setDeleteTarget(idea); }}
+                          >🗑 삭제하기</button>
+                        </div>
+                      )}
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </div>
 
         {/* 프로필 정보 */}
@@ -327,6 +439,29 @@ export default function MyPage({ user, onBack, onLogout }: Props) {
           </div>
         </div>
       </div>
+
+      {/* 삭제 확인 다이얼로그 */}
+      {deleteTarget && (
+        <div className="myfeeds-overlay" onClick={() => !deleting && setDeleteTarget(null)}>
+          <div className="myfeeds-dialog" onClick={(e) => e.stopPropagation()}>
+            <p className="myfeeds-dialog-title">피드를 삭제할까요?</p>
+            <p className="myfeeds-dialog-card">"{deleteTarget.title}"</p>
+            <p className="myfeeds-dialog-warning">⚠️ 삭제된 피드는 복구할 수 없어요. 투표 기록도 함께 사라져요.</p>
+            <div className="myfeeds-dialog-btns">
+              <button
+                className="myfeeds-dialog-cancel"
+                onClick={() => setDeleteTarget(null)}
+                disabled={deleting}
+              >취소</button>
+              <button
+                className="myfeeds-dialog-delete"
+                onClick={handleConfirmDelete}
+                disabled={deleting}
+              >{deleting ? '삭제 중...' : '삭제하기'}</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

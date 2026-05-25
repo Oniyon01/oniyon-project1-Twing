@@ -97,7 +97,7 @@
   gap: 3px;
   opacity: 0;
   transition: opacity 0.15s, transform 0.15s;
-  z-index: 100;
+  z-index: 9999;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
@@ -123,6 +123,11 @@
   transform: translateX(-50%);
   border: 5px solid transparent;
   border-top-color: rgba(168, 136, 216, 0.3);
+}
+
+.ca-grade-chip:hover,
+.ca-badge-chip:hover {
+  z-index: 9999;
 }
 
 .ca-grade-chip:hover .ca-tooltip,

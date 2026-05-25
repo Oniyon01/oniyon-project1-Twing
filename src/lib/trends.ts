@@ -25,6 +25,7 @@ export interface IdeaRow {
   hot_score: number;
   created_at: string;
   shared_at: string | null;
+  users?: { username: string | null; avatar_url: string | null; points: number } | null;
 }
 
 // IdeaRow → Trend 변환 (피드 표시용)
@@ -44,29 +45,74 @@ export function rowToTrend(row: IdeaRow): Trend {
     views: 0,
     votes: { yes: row.try_vote_count, no: 0, maybe: row.watch_vote_count },
     likes_count: row.like_count,
+    hot_score: row.hot_score,
     is_seed: false,
     hashtags: variant?.hashtags ?? [],
     variant_angle: variant?.angle ?? undefined,
     author_note: row.author_note ?? undefined,
+    author_nickname: row.users?.username ?? undefined,
+    author_points: row.users?.points ?? undefined,
+    author_avatar_url: row.users?.avatar_url ?? undefined,
   };
 }
 
 // 피드 데이터 — is_shared=true 인 ideas만 조회
 export async function fetchTrends(): Promise<Trend[]> {
+  // users 조인 포함 쿼리 시도 (FK 관계가 없으면 fallback)
   const { data, error } = await supabase
     .from('ideas')
-    .select('id, user_id, core_idea, category, variants, selected_variant_index, author_note, try_vote_count, watch_vote_count, like_count, comment_count, hot_score, created_at, shared_at')
+    .select('id, user_id, core_idea, category, variants, selected_variant_index, author_note, try_vote_count, watch_vote_count, like_count, comment_count, hot_score, created_at, shared_at, users(username, avatar_url, points)')
     .eq('is_shared', true)
     .eq('is_hidden', false)
     .order('hot_score', { ascending: false })
+    .order('created_at', { ascending: false });
+
+  if (!error) return (data as IdeaRow[]).map(rowToTrend);
+
+  // FK 관계 오류면 users 조인 없이 재시도
+  if (error.code === 'PGRST200' || error.message?.includes('relationship')) {
+    const { data: fallback, error: fallbackError } = await supabase
+      .from('ideas')
+      .select('id, user_id, core_idea, category, variants, selected_variant_index, author_note, try_vote_count, watch_vote_count, like_count, comment_count, hot_score, created_at, shared_at')
+      .eq('is_shared', true)
+      .eq('is_hidden', false)
+      .order('hot_score', { ascending: false })
+      .order('created_at', { ascending: false });
+
+    if (fallbackError) throw fallbackError;
+    return (fallback as IdeaRow[]).map(rowToTrend);
+  }
+
+  throw error;
+}
+
+// 조회수 — ideas 테이블에 views 컬럼 없음, 현재는 no-op
+export async function incrementViews(_ideaId: string): Promise<void> {}
+
+// 내가 공유한 피드 목록
+export async function fetchMyIdeas(userId: string): Promise<Trend[]> {
+  const { data, error } = await supabase
+    .from('ideas')
+    .select('id, user_id, core_idea, category, variants, selected_variant_index, author_note, try_vote_count, watch_vote_count, like_count, comment_count, hot_score, created_at, shared_at')
+    .eq('user_id', userId)
+    .eq('is_shared', true)
+    .eq('is_hidden', false)
+    .order('shared_at', { ascending: false })
     .order('created_at', { ascending: false });
 
   if (error) throw error;
   return (data as IdeaRow[]).map(rowToTrend);
 }
 
-// 조회수 — ideas 테이블에 views 컬럼 없음, 현재는 no-op
-export async function incrementViews(_ideaId: string): Promise<void> {}
+// 내 피드 삭제 (소프트 삭제 — is_hidden=true)
+export async function deleteMyIdea(ideaId: string): Promise<void> {
+  const { error } = await supabase
+    .from('ideas')
+    .update({ is_hidden: true })
+    .eq('id', ideaId);
+
+  if (error) throw error;
+}
 
 // 투표 — feedbacks 테이블 INSERT
 // VoteType 'yes'→'try', 'maybe'→'watch', 'no'→저장 안 함(새 스키마에 없음)

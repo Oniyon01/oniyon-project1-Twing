@@ -151,3 +151,44 @@
   margin: 4px 0 0;
   line-height: 1.4;
 }
+
+/* 투표 수 입력 */
+.dev-vote-count-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  padding: 5px 8px;
+}
+.dev-vote-count-label {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.5);
+  flex: 1;
+}
+.dev-vote-count-input {
+  width: 54px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  padding: 2px 4px;
+  outline: none;
+}
+.dev-vote-count-input:focus {
+  border-color: rgba(168, 136, 216, 0.6);
+}
+.dev-vote-count-unit {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* HOT 시뮬 버튼 */
+.dev-btn.hot {
+  background: rgba(255, 107, 53, 0.25);
+  color: #ff9a6c;
+}
